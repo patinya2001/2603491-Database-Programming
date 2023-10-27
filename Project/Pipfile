@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 django = "*"
 mysql-connector-python = "*"
-mysqlclient = "*"
 pandas = "*"
 jsons = "*"
 plotly = "*"
