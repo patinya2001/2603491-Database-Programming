@@ -1,0 +1,11 @@
+<header style="background-color: aquamarine;">
+    <a href="{% url 'home' %}">หน้าแรก</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">ออกจากระบบ</a>
+        {% if user.is_superuser %}
+            <a href="{% url 'register' %}">เพิ่มผู้ใช้งาน</a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'login' %}">เข้าสู่ระบบ</a>
+    {% endif %}
+</header>
