@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.0.34
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -37,7 +37,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('0zgea0562bl7y6fis1lya84yitf44e1v','.eJxVjDsOwjAQBe_iGllex19K-pzB2vVuSAAlUj4V4u4kUgpoZ-a9tyq4rX3ZFpnLwOqqQF1-GWF9yngIfuB4n3SdxnUeSB-JPu2i24nldTvbv4Mel35fW0jGAkVyFWwMOZiKWZL1qUkBPXfgIjpObCkb8shC0iXYUW4adqI-X8O4N9A:1qtO0E:HWR6NXjM8WVTWIO5t2LXOGP84Vbq6RGcjem0d5RRb8E','2023-11-02 08:03:34.536587'),('eza4o0po4ivc77ozekjqo6rrsqumodh1','.eJxVjDsOwjAQBe_iGllex19K-pzB2vVuSAAlUj4V4u4kUgpoZ-a9tyq4rX3ZFpnLwOqqQF1-GWF9yngIfuB4n3SdxnUeSB-JPu2i24nldTvbv4Mel35fW0jGAkVyFWwMOZiKWZL1qUkBPXfgIjpObCkb8shC0iXYUW4adqI-X8O4N9A:1qtZBv:wJonQ8m__t7phGWulBpGx3SATPgwvDUdxr2nz9cNFC4','2023-11-02 20:00:23.767768');
+INSERT INTO `django_session` VALUES ('k6gtcfgb22mo0sbqw3tewpnodl6tah4j','.eJxVjEEOwiAQRe_C2hDo0KG6dO8ZyMBMpWogKe3KeHfbpAvd_vfef6tA65LD2mQOE6uLsur0u0VKTyk74AeVe9WplmWeot4VfdCmb5XldT3cv4NMLW81INEoQCCxcy6d0Y8o0Rh0BoBZBmOEsI8dusR2cwk8C_aAnq3BQX2-9vA4HQ:1qvXJo:fAy192KMJ8r7gETGQEvO2Z5a9krns3Mq-4FPd5DZAks','2023-11-08 06:24:40.706793');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-20  5:29:02
+-- Dump completed on 2023-11-02  9:17:38

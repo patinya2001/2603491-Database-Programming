@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.0.34
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,7 +29,7 @@ CREATE TABLE `data_visualization_dailyperformance` (
   `transferPayment` int NOT NULL,
   `delivery` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=ascii;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,6 @@ CREATE TABLE `data_visualization_dailyperformance` (
 
 LOCK TABLES `data_visualization_dailyperformance` WRITE;
 /*!40000 ALTER TABLE `data_visualization_dailyperformance` DISABLE KEYS */;
-INSERT INTO `data_visualization_dailyperformance` VALUES (1,'2023-10-21 00:00:00.000000',2134,1233,890),(2,'2023-10-22 00:00:00.000000',2135,3242,509);
 /*!40000 ALTER TABLE `data_visualization_dailyperformance` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-20  5:29:02
+-- Dump completed on 2023-11-02  9:17:38
