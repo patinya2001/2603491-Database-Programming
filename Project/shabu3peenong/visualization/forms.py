@@ -15,3 +15,6 @@ class RecordModelForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'})
         }
+
+class CSVUploadForm(forms.Form):
+    CSVFile = forms.FileField()

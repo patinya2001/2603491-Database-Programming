@@ -19,7 +19,7 @@
         {% if user.is_superuser %}
             <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
             <h4><a href="#">แก้ไขผลประกอบการ</a></h4>
-            <h4><a href="#">นำเข้าข้อมูล</a></h4>
+            <h4><a href="{% url 'upload' %}">นำเข้าข้อมูล</a></h4>
             <h4><a href="{% url 'showinfo' %}">วิเคราะห์ข้อมูล</a></h4>
         {% else %}
             <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>

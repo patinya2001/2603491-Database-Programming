@@ -1,31 +1,10 @@
 {% extends 'visualization/components/base.html' %}
 
-{% block title %}หน้าแรก{% endblock %}
+{% block title %}วิเคราะห์ข้อมูล{% endblock %}
 
 {% block content %}
     <div>
-        <table>
-            <thead>
-                <tr>
-                    <td>วันที่</td>
-                    <td>เงินสด</td>
-                    <td>เงินโอน</td>
-                    <td>Delivery</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% if dataframe %}
-                    {% for data in dataframe %}
-                        <tr>
-                            <td>{{ data.date }}</td>
-                            <td>{{ data.cash }}</td>
-                            <td>{{ data.transferPayment }}</td>
-                            <td>{{ data.delivery }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
+        {{ dataframe | safe }}
     </div>
     <div>
         <h3>กราฟ</h3>

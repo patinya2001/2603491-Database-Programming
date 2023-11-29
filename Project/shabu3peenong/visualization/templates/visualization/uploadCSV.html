@@ -1,0 +1,15 @@
+{% extends 'visualization/components/base.html' %}
+
+{% block title %}นำเข้าข้อมูล{% endblock %}
+
+{% block content %}
+    <form method="POST" enctype="multipart/form-data">
+        <div>
+            {% csrf_token %}
+            {{ form.as_p }}
+        </div>
+        <div>
+            <button type="submit">บันทึก</button>
+        </div>
+    </form>
+{% endblock %}
