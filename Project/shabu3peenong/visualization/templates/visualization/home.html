@@ -1,30 +1,40 @@
 {% extends 'visualization/components/base.html' %}
+{% load static %}
 
 {% block title %}หน้าแรก{% endblock %}
 
 {% block content %}
     {% if user.is_authenticated %}
-        <h1>ยินดีต้อนรับ คุณ {{ user.username }}
-            {% if user.branch == '0' %}
-                (สาขาพหลโยธิน 52)
-            {% elif user.branch == '1' %}
-                (สาขารังสิต 200 ปี)
-            {% elif user.branch == '2' %}
-                (สาขาม.รังสิต)
+        <div>
+            <h1>ยินดีต้อนรับ คุณ {{ user.username }}
+                {% if user.branch == '0' %}
+                    (สาขาพหลโยธิน 52)
+                {% elif user.branch == '1' %}
+                    (สาขารังสิต 200 ปี)
+                {% elif user.branch == '2' %}
+                    (สาขาม.รังสิต)
+                {% else %}
+                    (ผู้จัดการ)
+                {% endif %}
+            </h1>
+        </div>
+        <div>
+            <img src="{% static 'visualization/logo.png' %}" width="200" height="200">
+        </div>
+        <div>
+            <h2>เมนู</h2>
+            {% if user.is_superuser %}
+                <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
+                <h4><a href="#">แก้ไขผลประกอบการ</a></h4>
+                <h4><a href="{% url 'upload' %}">นำเข้าข้อมูล</a></h4>
+                <h4><a href="{% url 'showinfo' %}">วิเคราะห์ข้อมูล</a></h4>
             {% else %}
-                (ผู้จัดการ)
+                <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
             {% endif %}
-        </h1>
-        <h2>เมนู</h2>
-        {% if user.is_superuser %}
-            <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
-            <h4><a href="#">แก้ไขผลประกอบการ</a></h4>
-            <h4><a href="{% url 'upload' %}">นำเข้าข้อมูล</a></h4>
-            <h4><a href="{% url 'showinfo' %}">วิเคราะห์ข้อมูล</a></h4>
-        {% else %}
-            <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
-        {% endif %}
+        </div>
     {% else %}
-        <h1>กรุณาเข้าสู่ระบบ</h1>
+        <div>
+            <h1>กรุณาเข้าสู่ระบบ</h1>
+        </div>
     {% endif %}
 {% endblock %}

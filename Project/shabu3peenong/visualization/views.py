@@ -1,15 +1,33 @@
+from .forms import RecordModelForm, CSVUploadForm, FilterData
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from .forms import RecordModelForm
-from .forms import CSVUploadForm
 from django.db import connection
 from django.urls import reverse
 from datetime import datetime
 import plotly.express as px
 import pandas as pd
-import json
 
+def queryField(case):
+     if case == 'insertRecord':
+          query = """
+                    INSERT INTO visualization_dailyperformance (date, cash, transferPayment, delivery) 
+                    VALUES (%s, %s, %s, %s)
+                  """
+          
+     elif case == 'showInfo':
+          query = """
+                    SELECT *
+                    FROM visualization_dailyperformance
+                  """
+          
+     elif case == 'average':
+          query = """
+                    SELECT *
+                    FROM getavg
+                  """
+          
+     return query
 
 def home(request):
      return render(request, 'visualization/home.html')
@@ -21,13 +39,10 @@ def record(request):
           if form.is_valid():
                data = form.cleaned_data
 
-               insert_query = """
-                    INSERT INTO visualization_dailyperformance (date, cash, transferPayment, delivery) 
-                    VALUES (%s, %s, %s, %s)
-               """
+               query = queryField('insertRecord')
 
                with connection.cursor() as cursor:
-                    cursor.execute(insert_query, [data['date'], data['cash'], data['transferPayment'], data['delivery']])
+                    cursor.execute(query, [data['date'], data['cash'], data['transferPayment'], data['delivery']])
 
                return HttpResponseRedirect(reverse('complete'))
           
@@ -41,25 +56,37 @@ def complete(request):
      return render(request, 'visualization/complete.html')
 
 @login_required
-def showinfo(request):
+def showInfo(request):
      arr = []
-     query = """
-          SELECT *
-          FROM visualization_dailyperformance
-     """
 
-     with connection.cursor() as cursor:
-          cursor.execute(query)
-          data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
-
-     for date in data:
-          date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
-     
-     dataframe = pd.DataFrame(data)
-
-     fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
-
-     context = {'dataframe': dataframe.to_html, 'chart': fig.to_html()}
+     if request.method == 'POST':
+          form = FilterData(request.POST)
+          if form.is_valid():
+               filter = form.cleaned_data
+               with connection.cursor() as cursor:
+                    query = queryField(filter['filter'])
+                    cursor.execute(query)
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    if filter['filter'] == 'showInfo':
+                         for date in data:
+                              date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
+                         fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
+                         dataframe = pd.DataFrame(data)
+                         context = {'dataframe': dataframe.to_html, 'chart': fig.to_html(), 'form': form}
+                    else:
+                         dataframe = pd.DataFrame(data)
+                         context = {'dataframe': dataframe.to_html, 'form': form}
+     else:
+          with connection.cursor() as cursor:
+               query = queryField('showInfo')
+               cursor.execute(query)
+               data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+               for date in data:
+                    date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
+          fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
+          dataframe = pd.DataFrame(data)
+          form = FilterData()
+          context = {'dataframe': dataframe.to_html, 'chart': fig.to_html(), 'form': form}
 
      return render(request, 'visualization/showinfo.html', context)
 

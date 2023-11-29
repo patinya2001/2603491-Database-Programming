@@ -18,3 +18,11 @@ class RecordModelForm(forms.ModelForm):
 
 class CSVUploadForm(forms.Form):
     CSVFile = forms.FileField()
+
+class FilterData(forms.Form):
+    field = [
+        ('showInfo', 'ข้อมูลทั้งหมด'),
+        ('average', 'ค่าเฉลี่ย'),
+    ]
+
+    filter = forms.ChoiceField(choices=field, required=False)

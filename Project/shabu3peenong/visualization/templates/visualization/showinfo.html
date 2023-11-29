@@ -3,11 +3,26 @@
 {% block title %}วิเคราะห์ข้อมูล{% endblock %}
 
 {% block content %}
-    <div>
-        {{ dataframe | safe }}
-    </div>
-    <div>
-        <h3>กราฟ</h3>
-        {{ chart|safe }}
-    </div>
+    {% if user.is_superuser %} 
+        <div>
+            <form id="filter" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <script>
+                    document.getElementById("id_filter").addEventListener("change", function() {
+                        document.getElementById("filter").submit();
+                    });
+                </script>
+            </form>
+        </div>
+        <div>
+            {{ dataframe | safe }}
+        </div>
+        <div>
+            <h3>กราฟ</h3>
+            {{ chart|safe }}
+        </div>
+    {% else %}
+        <h1>คุณไม่มีสิทธิเข้าถึงหน้านี้</h1>
+    {% endif %}
 {% endblock %}
