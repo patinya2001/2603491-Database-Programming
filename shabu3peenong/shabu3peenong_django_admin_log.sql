@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.1.0
+-- Server version	8.0.34
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,10 +25,10 @@ DROP TABLE IF EXISTS `django_admin_log`;
 CREATE TABLE `django_admin_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `action_time` datetime(6) NOT NULL,
-  `object_id` longtext,
-  `object_repr` varchar(200) NOT NULL,
+  `object_id` longtext COLLATE utf8mb4_unicode_ci,
+  `object_repr` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `action_flag` smallint unsigned NOT NULL,
-  `change_message` longtext NOT NULL,
+  `change_message` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `content_type_id` int DEFAULT NULL,
   `user_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
@@ -37,7 +37,7 @@ CREATE TABLE `django_admin_log` (
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_users_customuser_id` FOREIGN KEY (`user_id`) REFERENCES `users_customuser` (`id`),
   CONSTRAINT `django_admin_log_chk_1` CHECK ((`action_flag` >= 0))
-) ENGINE=InnoDB DEFAULT CHARSET=ascii;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-02  9:17:38
+-- Dump completed on 2023-12-02  5:32:42

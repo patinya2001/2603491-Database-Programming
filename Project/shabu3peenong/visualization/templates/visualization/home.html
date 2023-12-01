@@ -7,12 +7,12 @@
     {% if user.is_authenticated %}
         <div>
             <h1>ยินดีต้อนรับ คุณ {{ user.username }}
-                {% if user.branch == '0' %}
+                {% if user.branch == '1' %}
                     (สาขาพหลโยธิน 52)
-                {% elif user.branch == '1' %}
-                    (สาขารังสิต 200 ปี)
                 {% elif user.branch == '2' %}
                     (สาขาม.รังสิต)
+                {% elif user.branch == '3' %}
+                    (สาขารังสิต 200 ปี)
                 {% else %}
                     (ผู้จัดการ)
                 {% endif %}

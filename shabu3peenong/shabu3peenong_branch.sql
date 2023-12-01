@@ -16,31 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `users_customuser_user_permissions`
+-- Table structure for table `branch`
 --
 
-DROP TABLE IF EXISTS `users_customuser_user_permissions`;
+DROP TABLE IF EXISTS `branch`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `users_customuser_user_permissions` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `customuser_id` bigint NOT NULL,
-  `permission_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `users_customuser_user_pe_customuser_id_permission_7a7debf6_uniq` (`customuser_id`,`permission_id`),
-  KEY `users_customuser_use_permission_id_baaa2f74_fk_auth_perm` (`permission_id`),
-  CONSTRAINT `users_customuser_use_customuser_id_5771478b_fk_users_cus` FOREIGN KEY (`customuser_id`) REFERENCES `users_customuser` (`id`),
-  CONSTRAINT `users_customuser_use_permission_id_baaa2f74_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`)
+CREATE TABLE `branch` (
+  `branch_id` int NOT NULL,
+  `branch_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `branch_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `users_customuser_user_permissions`
+-- Dumping data for table `branch`
 --
 
-LOCK TABLES `users_customuser_user_permissions` WRITE;
-/*!40000 ALTER TABLE `users_customuser_user_permissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users_customuser_user_permissions` ENABLE KEYS */;
+LOCK TABLES `branch` WRITE;
+/*!40000 ALTER TABLE `branch` DISABLE KEYS */;
+INSERT INTO `branch` VALUES (0,'แอดมิน','แอดมิน'),(1,'สาขาพหลโยธิน 52','เลขที่ 399 24 ซอย พหลโยธิน 52 แยก 44 แขวงคลองถนน เขตสายไหม กรุงเทพมหานคร 10220'),(2,'สาขาม.รังสิต','71, 323 2, ตำบล หลักหก อำเภอเมืองปทุมธานี ปทุมธานี 12000'),(3,'สาขารังสิต 200 ปี','134 รังสิต-ปทุมธานี 10 ตำบล ประชาธิปัตย์ อำเภอธัญบุรี ปทุมธานี 12130');
+/*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-02  5:32:43
+-- Dump completed on 2023-12-02  5:32:42

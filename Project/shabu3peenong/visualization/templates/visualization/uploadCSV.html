@@ -3,13 +3,24 @@
 {% block title %}นำเข้าข้อมูล{% endblock %}
 
 {% block content %}
-    <form method="POST" enctype="multipart/form-data">
+    <form id="csv" method="POST" enctype="multipart/form-data">
         <div>
             {% csrf_token %}
             {{ form.as_p }}
-        </div>
-        <div>
-            <button type="submit">บันทึก</button>
+            <script>
+                document.getElementById("id_CSVFile").addEventListener("change", function() {
+                    document.getElementById("csv").submit();
+                });
+            </script>
         </div>
     </form>
+    {% if dataframe %}
+        <h5>ชื่อไฟล์: {{ file.name }}</h5>
+        <form action="{% url 'save' %}">
+            <h3>กรุณาตรวจสอบข้อมูล</h3>
+            {{ dataframe | safe }}
+            <button type="submit">บันทึก</button>
+        </form>
+        <a href="{% url 'home' %}">ย้อนกลับ</a>
+    {% endif %}
 {% endblock %}

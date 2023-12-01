@@ -72,10 +72,10 @@ def showInfo(request):
                               date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
                          fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
                          dataframe = pd.DataFrame(data)
-                         context = {'dataframe': dataframe.to_html, 'chart': fig.to_html(), 'form': form}
+                         context = {'dataframe': dataframe.to_html(index=False), 'chart': fig.to_html(), 'form': form}
                     else:
                          dataframe = pd.DataFrame(data)
-                         context = {'dataframe': dataframe.to_html, 'form': form}
+                         context = {'dataframe': dataframe.to_html(index=False), 'form': form}
      else:
           with connection.cursor() as cursor:
                query = queryField('showInfo')
@@ -86,7 +86,7 @@ def showInfo(request):
           fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
           dataframe = pd.DataFrame(data)
           form = FilterData()
-          context = {'dataframe': dataframe.to_html, 'chart': fig.to_html(), 'form': form}
+          context = {'dataframe': dataframe.to_html(index=False), 'chart': fig.to_html(), 'form': form}
 
      return render(request, 'visualization/showinfo.html', context)
 
@@ -97,11 +97,21 @@ def uploadCSV(request):
           if form.is_valid():
                CSVFile = request.FILES['CSVFile']
                dataframe = pd.read_csv(CSVFile)
-               context = {'dataframe': dataframe.to_html}
-               return render(request, 'visualization/checkCSV.html', context)
-
-
+               request.session['dataframe'] = dataframe.to_json(indent=False)
+               context = {'dataframe': dataframe.to_html(index=False), 'form': form, 'file': CSVFile}
+               return render(request, 'visualization/uploadCSV.html', context)
      else:
           form = CSVUploadForm()
-          context = {'form': form}
+     context = {'form': form}
+
      return render(request, 'visualization/uploadCSV.html', context)
+
+@login_required
+def saveCSV(request):
+     dataframe = request.session.get('dataframe')
+     if dataframe:
+          dataframe = pd.read_json(dataframe)
+          print(dataframe.shape)
+     request.session.pop('dataframe', None)
+     
+     return HttpResponseRedirect(request.headers.get('referer'))

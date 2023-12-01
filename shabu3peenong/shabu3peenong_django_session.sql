@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.1.0
+-- Server version	8.0.34
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,12 +23,12 @@ DROP TABLE IF EXISTS `django_session`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `django_session` (
-  `session_key` varchar(40) NOT NULL,
-  `session_data` longtext NOT NULL,
+  `session_key` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `session_data` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=ascii;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('k6gtcfgb22mo0sbqw3tewpnodl6tah4j','.eJxVjEEOwiAQRe_C2hDo0KG6dO8ZyMBMpWogKe3KeHfbpAvd_vfef6tA65LD2mQOE6uLsur0u0VKTyk74AeVe9WplmWeot4VfdCmb5XldT3cv4NMLW81INEoQCCxcy6d0Y8o0Rh0BoBZBmOEsI8dusR2cwk8C_aAnq3BQX2-9vA4HQ:1qvXJo:fAy192KMJ8r7gETGQEvO2Z5a9krns3Mq-4FPd5DZAks','2023-11-08 06:24:40.706793');
+INSERT INTO `django_session` VALUES ('0gig2tlfdmig72m0atdocp6dk5n2e38h','.eJxVjEEOwiAQRe_C2hAYQKhL9z0DGRhGqoYmpV0Z765NutDtf-_9l4i4rTVuvSxxInERWpx-t4T5UdoO6I7tNss8t3WZktwVedAux5nK83q4fwcVe_3W3gwwoDUILhtHllSgBIGgeO2RAJm15TNhMEqRL5pDUMo5sEyeXRbvD9jyN88:1r9BvW:_JSjf9MS9ynhWkCHJ1VC_hlFGslUS-wX45c9keRKWUI','2023-12-15 22:24:02.295789');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-02  9:17:38
+-- Dump completed on 2023-12-02  5:32:42

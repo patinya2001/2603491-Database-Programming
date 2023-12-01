@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.1.0
+-- Server version	8.0.34
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,29 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `data_visualization_dailyperformance`
+-- Table structure for table `receipt`
 --
 
-DROP TABLE IF EXISTS `data_visualization_dailyperformance`;
+DROP TABLE IF EXISTS `receipt`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `data_visualization_dailyperformance` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `date` datetime(6) NOT NULL,
-  `cash` int NOT NULL,
-  `transferPayment` int NOT NULL,
-  `delivery` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=ascii;
+CREATE TABLE `receipt` (
+  `receipt_id` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receipt_date` datetime NOT NULL,
+  `receipt_SKU` int NOT NULL,
+  `receipt_quantity` int NOT NULL,
+  `receipt_total` double NOT NULL,
+  `receipt_discount` double NOT NULL,
+  `receipt_net` double NOT NULL,
+  PRIMARY KEY (`receipt_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `data_visualization_dailyperformance`
+-- Dumping data for table `receipt`
 --
 
-LOCK TABLES `data_visualization_dailyperformance` WRITE;
-/*!40000 ALTER TABLE `data_visualization_dailyperformance` DISABLE KEYS */;
-/*!40000 ALTER TABLE `data_visualization_dailyperformance` ENABLE KEYS */;
+LOCK TABLES `receipt` WRITE;
+/*!40000 ALTER TABLE `receipt` DISABLE KEYS */;
+/*!40000 ALTER TABLE `receipt` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-02  9:17:38
+-- Dump completed on 2023-12-02  5:32:43

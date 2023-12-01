@@ -3,9 +3,9 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     branch_list = (
-        ('0', 'สาขาพหลโยธิน 52'),
-        ('1', 'สาขารังสิต 200 ปี'),
-        ('2', 'สาขาม.รังสิต'),
+        (1, 'สาขาพหลโยธิน 52'),
+        (2, 'สาขาม.รังสิต'),
+        (3, 'สาขารังสิต 200 ปี'),
     )
 
-    branch = models.CharField(max_length=20, choices=branch_list)
+    branch = models.IntegerField(choices=branch_list)

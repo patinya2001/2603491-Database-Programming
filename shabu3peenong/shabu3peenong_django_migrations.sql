@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: localhost    Database: shabu3peenong
 -- ------------------------------------------------------
--- Server version	8.1.0
+-- Server version	8.0.34
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -24,11 +24,11 @@ DROP TABLE IF EXISTS `django_migrations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `django_migrations` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `app` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `app` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=ascii;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2023-10-25 06:22:58.575562'),(2,'contenttypes','0002_remove_content_type_name','2023-10-25 06:22:58.589246'),(3,'auth','0001_initial','2023-10-25 06:22:58.628760'),(4,'auth','0002_alter_permission_name_max_length','2023-10-25 06:22:58.634312'),(5,'auth','0003_alter_user_email_max_length','2023-10-25 06:22:58.637237'),(6,'auth','0004_alter_user_username_opts','2023-10-25 06:22:58.639613'),(7,'auth','0005_alter_user_last_login_null','2023-10-25 06:22:58.642956'),(8,'auth','0006_require_contenttypes_0002','2023-10-25 06:22:58.643997'),(9,'auth','0007_alter_validators_add_error_messages','2023-10-25 06:22:58.666891'),(10,'auth','0008_alter_user_username_max_length','2023-10-25 06:22:58.669434'),(11,'auth','0009_alter_user_last_name_max_length','2023-10-25 06:22:58.671518'),(12,'auth','0010_alter_group_name_max_length','2023-10-25 06:22:58.676049'),(13,'auth','0011_update_proxy_permissions','2023-10-25 06:22:58.678792'),(14,'auth','0012_alter_user_first_name_max_length','2023-10-25 06:22:58.681772'),(15,'users','0001_initial','2023-10-25 06:22:58.723398'),(16,'admin','0001_initial','2023-10-25 06:22:58.743264'),(17,'admin','0002_logentry_remove_auto_add','2023-10-25 06:22:58.747450'),(18,'admin','0003_logentry_add_action_flag_choices','2023-10-25 06:22:58.750292'),(19,'data_visualization','0001_initial','2023-10-25 06:22:58.753511'),(20,'data_visualization','0002_customuser','2023-10-25 06:22:58.794196'),(21,'data_visualization','0003_delete_customuser','2023-10-25 06:22:58.800872'),(22,'sessions','0001_initial','2023-10-25 06:22:58.806898'),(23,'users','0002_alter_customuser_branch','2023-10-25 06:22:58.809886'),(24,'users','0003_alter_customuser_branch','2023-10-25 06:22:58.813385'),(25,'visualization','0001_initial','2023-10-31 15:22:07.230223');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2023-12-01 15:54:28.649487'),(2,'contenttypes','0002_remove_content_type_name','2023-12-01 15:54:28.730304'),(3,'auth','0001_initial','2023-12-01 15:54:28.971541'),(4,'auth','0002_alter_permission_name_max_length','2023-12-01 15:54:29.035525'),(5,'auth','0003_alter_user_email_max_length','2023-12-01 15:54:29.050525'),(6,'auth','0004_alter_user_username_opts','2023-12-01 15:54:29.063530'),(7,'auth','0005_alter_user_last_login_null','2023-12-01 15:54:29.132604'),(8,'auth','0006_require_contenttypes_0002','2023-12-01 15:54:29.137600'),(9,'auth','0007_alter_validators_add_error_messages','2023-12-01 15:54:29.149642'),(10,'auth','0008_alter_user_username_max_length','2023-12-01 15:54:29.163642'),(11,'auth','0009_alter_user_last_name_max_length','2023-12-01 15:54:29.175643'),(12,'auth','0010_alter_group_name_max_length','2023-12-01 15:54:29.207225'),(13,'auth','0011_update_proxy_permissions','2023-12-01 15:54:29.223974'),(14,'auth','0012_alter_user_first_name_max_length','2023-12-01 15:54:29.235813'),(15,'users','0001_initial','2023-12-01 15:54:29.492505'),(16,'admin','0001_initial','2023-12-01 15:54:29.623893'),(17,'admin','0002_logentry_remove_auto_add','2023-12-01 15:54:29.635703'),(18,'admin','0003_logentry_add_action_flag_choices','2023-12-01 15:54:29.654707'),(19,'sessions','0001_initial','2023-12-01 15:54:29.697594'),(20,'users','0002_alter_customuser_branch','2023-12-01 15:54:29.712595'),(21,'users','0003_alter_customuser_branch','2023-12-01 15:54:29.726247'),(22,'users','0004_alter_customuser_branch','2023-12-01 15:54:29.742244'),(23,'users','0005_alter_customuser_branch','2023-12-01 15:54:29.758246'),(24,'users','0006_alter_customuser_branch','2023-12-01 15:54:29.831475'),(25,'visualization','0001_initial','2023-12-01 15:54:29.851500');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-02  9:17:38
+-- Dump completed on 2023-12-02  5:32:43
