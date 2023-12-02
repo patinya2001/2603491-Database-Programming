@@ -23,15 +23,16 @@ DROP TABLE IF EXISTS `receipt`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `receipt` (
+  `record_id` int NOT NULL AUTO_INCREMENT,
   `receipt_id` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `receipt_date` datetime NOT NULL,
   `receipt_SKU` int NOT NULL,
   `receipt_quantity` int NOT NULL,
-  `receipt_total` double NOT NULL,
-  `receipt_discount` double NOT NULL,
-  `receipt_net` double NOT NULL,
-  PRIMARY KEY (`receipt_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `receipt_total` float NOT NULL,
+  `receipt_discount` float NOT NULL,
+  `receipt_net` float NOT NULL,
+  PRIMARY KEY (`record_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=193 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-02  5:32:43
+-- Dump completed on 2023-12-03  3:10:28

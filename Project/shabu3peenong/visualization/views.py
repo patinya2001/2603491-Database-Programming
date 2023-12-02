@@ -13,20 +13,24 @@ def queryField(case):
           query = """
                     INSERT INTO visualization_dailyperformance (date, cash, transferPayment, delivery) 
                     VALUES (%s, %s, %s, %s)
-                  """
+             """
           
      elif case == 'showInfo':
           query = """
                     SELECT *
                     FROM visualization_dailyperformance
-                  """
+             """
           
      elif case == 'average':
           query = """
                     SELECT *
                     FROM getavg
-                  """
-          
+               """
+     elif case == 'receipt':
+          query = """
+                    INSERT INTO receipt (receipt_id, receipt_date, receipt_SKU, receipt_quantity, receipt_total, receipt_discount, receipt_net) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+               """
      return query
 
 def home(request):
@@ -111,7 +115,18 @@ def saveCSV(request):
      dataframe = request.session.get('dataframe')
      if dataframe:
           dataframe = pd.read_json(dataframe)
-          print(dataframe.shape)
+          dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%y %H:%M"))
+
+          query = queryField('receipt')
+
+          for i in range(dataframe.shape[0]):
+               data = [
+                    str(dataframe.iloc[i, 1]), dataframe.iloc[i, 0], int(dataframe.iloc[i, 4]),int(dataframe.iloc[i, 8]),
+                    float(dataframe.iloc[i, 9]), float(dataframe.iloc[i, 10]), float(dataframe.iloc[i, 11])
+                    ]
+               with connection.cursor() as cursor:
+                    cursor.execute(query, data)
+
      request.session.pop('dataframe', None)
      
-     return HttpResponseRedirect(request.headers.get('referer'))
+     return HttpResponseRedirect(reverse('complete'))
