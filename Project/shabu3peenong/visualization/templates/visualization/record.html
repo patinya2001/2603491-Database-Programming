@@ -3,13 +3,17 @@
 {% block title %}บันทึก{% endblock %}
 
 {% block content %}
-    <form action="{% url 'record' %}" method="POST">
-        <div>
-            {% csrf_token %}
-            {{ form.as_p }}
+    <main class="normal-content">
+        <div class="plist">
+            <form action="{% url 'record' %}" method="POST">
+                <div>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </div>
+                <div>
+                    <button type="submit" class="button button-primary">บันทึก</button>
+                </div>
+            </form>
         </div>
-        <div>
-            <button type="submit">บันทึก</button>
-        </div>
-    </form>
+    </main>
 {% endblock %}

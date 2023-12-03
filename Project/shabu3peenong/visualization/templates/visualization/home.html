@@ -5,36 +5,19 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        <div>
-            <h1>ยินดีต้อนรับ คุณ {{ user.username }}
-                {% if user.branch == '1' %}
-                    (สาขาพหลโยธิน 52)
-                {% elif user.branch == '2' %}
-                    (สาขาม.รังสิต)
-                {% elif user.branch == '3' %}
-                    (สาขารังสิต 200 ปี)
-                {% else %}
-                    (ผู้จัดการ)
-                {% endif %}
-            </h1>
-        </div>
-        <div>
-            <img src="{% static 'visualization/logo.png' %}" width="200" height="200">
-        </div>
-        <div>
-            <h2>เมนู</h2>
-            {% if user.is_superuser %}
-                <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
-                <h4><a href="#">แก้ไขผลประกอบการ</a></h4>
-                <h4><a href="{% url 'upload' %}">นำเข้าข้อมูล</a></h4>
-                <h4><a href="{% url 'showinfo' %}">วิเคราะห์ข้อมูล</a></h4>
-            {% else %}
-                <h4><a href="{% url 'record' %}">บันทึกผลประกอบการ</a></h4>
-            {% endif %}
-        </div>
+            <main class="dashboard">
+                <div class="plist">
+                    
+                </div>
+            </main>
     {% else %}
-        <div>
-            <h1>กรุณาเข้าสู่ระบบ</h1>
-        </div>
+        <main class="normal-content">
+            <div class="plist">
+                <h2 class="welcome-text">
+                    ยินดีต้อนรับเข้าสู่เว็ปไซต์บริหารจัดการของร้านชาบู 3 พี่น้อง กรุณา 
+                    <a href="{% url 'login' %}" style="text-decoration: underline;">เข้าสู่ระบบ</a> เพื่อใช้งาน
+                </h2>
+            </div>
+        </main>
     {% endif %}
 {% endblock %}

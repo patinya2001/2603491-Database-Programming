@@ -17,7 +17,7 @@ class RecordModelForm(forms.ModelForm):
         }
 
 class CSVUploadForm(forms.Form):
-    CSVFile = forms.FileField()
+    CSVFile = forms.FileField(label='เลือกไฟล์ CSV')
 
 class FilterData(forms.Form):
     field = [

@@ -3,11 +3,15 @@
 {% block title %}เข้าสู่ระบบ{% endblock %}
 
 {% block content %}
-    <form action="{% url 'login' %}" method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        <p>
-            <button type="submit">เข้าสู่ระบบ</button>
-        </p>
-    </form>
+    <main class="normal-content">
+        <div class="plist">
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <p>
+                    <button type="submit" class="button button-primary">เข้าสู่ระบบ</button>
+                </p>
+            </form>
+        </div>
+    </main>
 {% endblock %}

@@ -1,11 +1,77 @@
-<header style="background-color: aquamarine;">
-    <a href="{% url 'home' %}">หน้าแรก</a>
-    {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">ออกจากระบบ</a>
-        {% if user.is_superuser %}
-            <a href="{% url 'register' %}">เพิ่มผู้ใช้งาน</a>
+<nav class="navbar">
+    <div class="container">
+        <div>
+            <h1><a href="{% url 'home' %}">ชาบู 3 พี่น้อง</a></h1>
+            <div class="menu">
+                <ul>
+                    <li>
+                        <a href="{% url 'home' %}">หน้าแรก</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'logout' %}">ออกจากระบบ</a>
+                        </li>
+                        {% if user.is_superuser %}
+                            <li>
+                                <a href="{% url 'register' %}">เพิ่มผู้ใช้งาน</a>
+                            </li>
+                        {% endif %}
+                            <li>
+                                <a class="user-status">
+                                    ยินดีต้อนรับ คุณ {{ user.username }}
+                                    {% if user.branch == '1' %}
+                                        (สาขาพหลโยธิน 52)
+                                    {% elif user.branch == '2' %}
+                                        (สาขาม.รังสิต)
+                                    {% elif user.branch == '3' %}
+                                        (สาขารังสิต 200 ปี)
+                                    {% else %}
+                                        (ผู้จัดการ)
+                                    {% endif %}
+                                </a>
+                            </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'login' %}">เข้าสู่ระบบ</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="menu-btn">
+            <span class="meterial-icons"></span>
+        </div>
+    </div>
+</nav>
+<nav class="sidebar">
+    <div class="container">
+        {% if user.is_authenticated %}
+            <h3 class="title">เมนู</h3>
+            <ul>
+                {% if user.is_superuser %}
+                    <li>
+                        <a href="{% url 'record' %}">บันทึกผลประกอบการ</a>
+                    </li>
+                    <li>
+                        <a href="#">แก้ไขผลประกอบการ</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'upload' %}">นำเข้าข้อมูล</a>
+                    </li>
+                    <li>
+                        <a href="#">วิเคราะห์ข้อมูล</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'record' %}">บันทึกผลประกอบการ</a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="#">คู่มือการใช้งาน</a>
+                </li>
+            </ul>
+        {% else %}
+            <h3 class="title">กรุณาเข้าสู่ระบบ</h3>
         {% endif %}
-    {% else %}
-        <a href="{% url 'login' %}">เข้าสู่ระบบ</a>
-    {% endif %}
-</header>
+    </div>
+</nav>

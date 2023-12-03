@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="icon" href="{% static 'visualization/logo.png' %}">
+    <link rel="stylesheet" href="{% static 'visualization/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'visualization/main.css' %}">
 </head>
 <body>
     {% include 'visualization/components/header.html' %}
     {% block content %}{% endblock %}
-    {% include 'visualization/components/footer.html' %}
 </body>
 </html>

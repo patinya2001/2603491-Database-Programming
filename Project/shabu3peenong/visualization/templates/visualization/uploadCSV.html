@@ -3,24 +3,33 @@
 {% block title %}นำเข้าข้อมูล{% endblock %}
 
 {% block content %}
-    <form id="csv" method="POST" enctype="multipart/form-data">
-        <div>
-            {% csrf_token %}
-            {{ form.as_p }}
-            <script>
-                document.getElementById("id_CSVFile").addEventListener("change", function() {
-                    document.getElementById("csv").submit();
-                });
-            </script>
+    <main class="normal-content">
+        <div class="plist">
+            {% if user.is_superuser %}
+                <form id="csv" method="POST" enctype="multipart/form-data">
+                    <div>
+                        {% csrf_token %}
+                        {{ form.CSVFile.label_tag }}
+                        {{ form.CSVFile }}
+                        <script>
+                            document.getElementById("id_CSVFile").addEventListener("change", function() {
+                                document.getElementById("csv").submit();
+                            });
+                        </script>
+                    </div>
+                </form>
+                {% if dataframe %}
+                    <form action="{% url 'save' %}">
+                        <h4>ชื่อไฟล์: {{ file.name }}</h4>
+                        <button type="submit">บันทึก</button>
+                    </form>
+                    <a href="{% url 'home' %}">ย้อนกลับ</a>
+                    <h3>กรุณาตรวจสอบข้อมูล</h3>
+                    {{ dataframe | safe }}
+                {% endif %}
+            {% else %}
+                <h1 class="welcome-text">คุณไม่มีสิทธิเข้าถึงหน้านี้</h1>
+            {% endif %}
         </div>
-    </form>
-    {% if dataframe %}
-        <h5>ชื่อไฟล์: {{ file.name }}</h5>
-        <form action="{% url 'save' %}">
-            <h3>กรุณาตรวจสอบข้อมูล</h3>
-            {{ dataframe | safe }}
-            <button type="submit">บันทึก</button>
-        </form>
-        <a href="{% url 'home' %}">ย้อนกลับ</a>
-    {% endif %}
+    </main>
 {% endblock %}
