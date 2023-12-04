@@ -5,11 +5,11 @@ name = "pypi"
 
 [packages]
 django = "*"
-mysql-connector-python = "*"
 pandas = "*"
 jsons = "*"
 plotly = "*"
 openpyxl = "*"
+mysqlclient = '*'
 
 [dev-packages]
 
