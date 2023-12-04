@@ -31,9 +31,20 @@ def queryField(case):
                     INSERT INTO receipt (receipt_id, receipt_date, receipt_SKU, receipt_quantity, receipt_total, receipt_discount, receipt_net) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                """
+     elif case == 'daily':
+          query = """
+                    SELECT *
+                    FROM daily
+                    LIMIT 3
+               """     
+     
      return query
 
 def home(request):
+     with connection.cursor() as cursor:
+          query = queryField('daily')
+          cursor.execute(query)
+          data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
      return render(request, 'visualization/home.html')
 
 @login_required
@@ -115,7 +126,11 @@ def saveCSV(request):
      dataframe = request.session.get('dataframe')
      if dataframe:
           dataframe = pd.read_json(dataframe)
-          dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%y %H:%M"))
+
+          try:
+               dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%y %H:%M"))
+          except:
+               dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%Y %H:%M"))
 
           query = queryField('receipt')
 

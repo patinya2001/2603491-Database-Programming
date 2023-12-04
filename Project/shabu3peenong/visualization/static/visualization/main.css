@@ -137,15 +137,19 @@ input[type='file'] {
     padding: 8px 12px;
     transition: background-color 0.3s;
     cursor: pointer;
-  }
+}
   
   .button-primary {
     background-color: #000000;
-  }
+}
   
   .button-primary:hover {
     background-color: #272727;
-  }
+}
+
+.welcome-text {
+    font-size: 24px;
+}
 
 /* Header */
 
@@ -266,6 +270,24 @@ input[type='file'] {
     overflow-x: hidden;
 }
 
-.welcome-text {
-    font-size: 24px;
+.panel {
+    background: linear-gradient(90deg, #262a4f, #122442);
+    box-shadow: -5px -5px 8px #293063, 5px 5px 8px #11163c;
+    border-radius: 1em;
+    overflow: hidden;
+}
+
+.list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2em;
+}
+
+.list li:not(:last-child) {
+    border-bottom: 1px #2a335e solid;
+}
+
+.list span {
+    color: #ea335d;
 }

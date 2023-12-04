@@ -9,6 +9,7 @@ mysql-connector-python = "*"
 pandas = "*"
 jsons = "*"
 plotly = "*"
+openpyxl = "*"
 
 [dev-packages]
 
