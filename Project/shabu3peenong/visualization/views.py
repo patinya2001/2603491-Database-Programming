@@ -7,6 +7,7 @@ from django.urls import reverse
 from datetime import datetime
 import plotly.express as px
 import pandas as pd
+import datetime
 
 def queryField(case):
      if case == 'insertRecord':
@@ -45,7 +46,12 @@ def home(request):
           query = queryField('daily')
           cursor.execute(query)
           data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
-     return render(request, 'visualization/home.html')
+          data = [{'Date': datetime.date(d['Date'].year, d['Date'].day, d['Date'].month), 'Net': d['Net']} for d in data]
+          fig = px.bar(data, x='Date', y='Net')
+          
+          context = {'data': data, 'chart': fig.to_html}
+
+     return render(request, 'visualization/home.html', context)
 
 @login_required
 def record(request):
@@ -72,8 +78,6 @@ def complete(request):
 
 @login_required
 def showInfo(request):
-     arr = []
-
      if request.method == 'POST':
           form = FilterData(request.POST)
           if form.is_valid():
