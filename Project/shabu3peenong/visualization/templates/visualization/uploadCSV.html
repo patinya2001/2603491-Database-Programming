@@ -9,8 +9,9 @@
                 <form id="csv" method="POST" enctype="multipart/form-data">
                     <div>
                         {% csrf_token %}
-                        {{ form.CSVFile.label_tag }}
-                        {{ form.CSVFile }}
+                        {{ filterForm.as_p }}
+                        {{ CSVForm.CSVFile.label_tag }}
+                        {{ CSVForm.CSVFile }}
                         <script>
                             document.getElementById("id_CSVFile").addEventListener("change", function() {
                                 document.getElementById("csv").submit();
@@ -19,11 +20,13 @@
                     </div>
                 </form>
                 {% if dataframe %}
-                    <form action="{% url 'save' %}">
+                    <form action="{% url 'save' %}" class="csv-submit">
                         <h4>ชื่อไฟล์: {{ file.name }}</h4>
-                        <button type="submit">บันทึก</button>
+                        <div>
+                            <button type="submit" class="button button-primary">บันทึก</button>
+                            <a href="{% url 'home' %}" class="button button-primary">ย้อนกลับ</a>
+                        </div>
                     </form>
-                    <a href="{% url 'home' %}">ย้อนกลับ</a>
                     <h3>กรุณาตรวจสอบข้อมูล</h3>
                     {{ dataframe | safe }}
                 {% endif %}

@@ -26,3 +26,11 @@ class FilterData(forms.Form):
     ]
 
     filter = forms.ChoiceField(choices=field, required=False)
+
+class FilterCSV(forms.Form):
+    field = [
+        ('receipts', 'Receipts'),
+        ('itemSales', 'Item Sales'),
+    ]
+
+    filter = forms.ChoiceField(choices=field, required=False, label='ประเภทไฟล์')

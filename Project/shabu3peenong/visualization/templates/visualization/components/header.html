@@ -8,9 +8,6 @@
                         <a href="{% url 'home' %}">หน้าแรก</a>
                     </li>
                     {% if user.is_authenticated %}
-                        <li>
-                            <a href="{% url 'logout' %}">ออกจากระบบ</a>
-                        </li>
                         {% if user.is_superuser %}
                             <li>
                                 <a href="{% url 'register' %}">เพิ่มผู้ใช้งาน</a>
@@ -29,6 +26,9 @@
                                         (ผู้จัดการ)
                                     {% endif %}
                                 </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'logout' %}">ออกจากระบบ</a>
                             </li>
                     {% else %}
                         <li>
