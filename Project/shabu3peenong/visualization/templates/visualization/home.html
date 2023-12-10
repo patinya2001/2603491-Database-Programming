@@ -6,28 +6,34 @@
 {% block content %}
     {% if user.is_authenticated %}
             <main class="dashboard">
-                <div>
-                    <div class="panel list">
-                        <li>
-                            <h2>วันที่</h2>
-                            <span>รายได้</span>
-                        </li>
-                        {% for data in data %}
+                {% if user.is_superuser %}
+                    <div>
+                        <div class="panel list">
                             <li>
-                                <h4>{{ data.Date }}</h4>
-                                <span>{{ data.Net }} บาท</span>
+                                <h2>วันที่</h2>
+                                <span>รายได้</span>
                             </li>
-                        {% endfor %}
+                            {% for data in data %}
+                                <li>
+                                    <h4>{{ data.Date }}</h4>
+                                    <span>{{ data.Net }} บาท</span>
+                                </li>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-                <div class="daily-chart">
-                    <div class="panel">
-                        {{ chart|safe }}
+                    <div class="daily-chart">
+                        <div class="panel">
+                            {{ chart|safe }}
+                        </div>
                     </div>
-                </div>
-                <div>
-
-                </div>
+                {% else %}
+                    <div>
+                        
+                    </div>
+                    <div class="daily-chart">
+                        
+                    </div>
+                {% endif %}
             </main>
     {% else %}
         <main class="normal-content">

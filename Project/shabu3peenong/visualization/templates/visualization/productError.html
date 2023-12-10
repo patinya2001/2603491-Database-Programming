@@ -1,0 +1,14 @@
+{% extends 'visualization/components/base.html' %}
+
+{% block title %}ข้อผิดพลาด{% endblock %}
+
+{% block content %}
+<main class="normal-content">
+    <div class="">
+        <h1>บันทึกไม่สำเร็จ</h1>
+        <h3>{{ error }}</h3>
+        <a href="{% url 'record' %}">ลองอีกครั้ง</a>
+        <a href="{% url 'home' %}">กลับสู่หน้าแรก</a>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'visualization/components/base.html' %}
+
+{% block title %}นำเข้าข้อมูล{% endblock %}
+
+{% block content %}
+    <main class="normal-content">
+        <div class="">
+            {% if user.is_superuser %}
+                {% if addProduct %}
+                    <form action="{% url 'save' %}" class="csv-submit">
+                        <h1>บันทึกไม่สำเร็จ มีสินค้าที่คุณยังไม่ได้เพิ่มเข้าระบบ</h1>
+                        <h3>คุณต้องการเพิ่มสินค้าตามรายการด้านล่างและบันทึกอีกครั้งหรือไม่</h3>
+                        <div>
+                            <button type="submit" class="button button-primary">บันทึก</button>
+                            <a href="{% url 'home' %}" class="button button-primary">ย้อนกลับ</a>
+                        </div>
+                    </form>
+                    {{ addProduct | safe }}
+                {% endif %}
+            {% else %}
+                <h1 class="welcome-text">คุณไม่มีสิทธิเข้าถึงหน้านี้</h1>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}

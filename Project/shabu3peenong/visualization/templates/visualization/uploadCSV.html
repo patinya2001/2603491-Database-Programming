@@ -20,13 +20,17 @@
                     </div>
                 </form>
                 {% if dataframe %}
-                    <form action="{% url 'save' %}" class="csv-submit">
-                        <h4>ชื่อไฟล์: {{ file.name }}</h4>
-                        <div>
-                            <button type="submit" class="button button-primary">บันทึก</button>
-                            <a href="{% url 'home' %}" class="button button-primary">ย้อนกลับ</a>
-                        </div>
-                    </form>
+                    {% if addProduct %}
+                        <form action="{% url 'addProduct' %}" class="csv-submit">
+                    {% else %}
+                        <form action="{% url 'save' %}" class="csv-submit">
+                    {% endif %}
+                            <h4>ชื่อไฟล์: {{ file.name }}</h4>
+                            <div>
+                                <button type="submit" class="button button-primary">บันทึก</button>
+                                <a href="{% url 'home' %}" class="button button-primary">ย้อนกลับ</a>
+                            </div>
+                        </form>
                     <h3>กรุณาตรวจสอบข้อมูล</h3>
                     {{ dataframe | safe }}
                 {% endif %}
