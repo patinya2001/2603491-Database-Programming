@@ -11,13 +11,15 @@ class FilterInsert(forms.Form):
                 ('expenses', 'ค่าใช้จ่าย'),
                 ('activity', 'เช็คชื่อพนักงาน'),
             ]
+            default = 'product'
         else:
             field_choices = [
                 ('expenses', 'ค่าใช้จ่าย'),
                 ('activity', 'เช็คชื่อพนักงาน'),
             ]
+            default = 'expenses'
 
-        self.fields['filter'] = forms.ChoiceField(choices=field_choices, required=False, label='หมวดหมู่')
+        self.fields['filter'] = forms.ChoiceField(choices=field_choices, required=False, label='หมวดหมู่', initial=default)
 
 class InsertProduct(forms.Form):
     SKU = forms.IntegerField(required=True, label='รหัส SKU')
@@ -60,7 +62,7 @@ class DailyExpense(forms.Form):
     expenseBranch = forms.ChoiceField(required=True, label='สาขา')
     expenseDate = forms.DateTimeField(
         required=True,
-        label='วันที่',
+        label='วันที่-เวลา',
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         input_formats=['%Y-%m-%dT%H:%M'],
     )
@@ -81,3 +83,29 @@ class DailyExpense(forms.Form):
             branch_field = cursor.fetchall()
 
         self.fields['expenseBranch'] = forms.ChoiceField(required=True, choices=branch_field, label='สาขา')
+
+class ActivityForm(forms.Form):
+    activityEmployee = forms.ChoiceField(required=True, label='พนักงาน')
+    activityDate = forms.DateTimeField(
+        required=True,
+        label='วันที่-เวลา',
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        input_formats=['%Y-%m-%dT%H:%M'],
+    )
+    activityAbsent = forms.BooleanField(required=False, label='ขาดงาน')
+    activityLate = forms.BooleanField(required=False, label='มาสาย (ถ้าขาดงานไม่ต้องใส่)')
+
+    def __init__(self, *args, user_branch=0, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+
+        if user_branch == 0:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT employee_id, CONCAT(employee_firstname, ' ', employee_lastname) FROM employee")
+                employee = cursor.fetchall()
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT employee_id, CONCAT(employee_firstname, ' ', employee_lastname) FROM employee WHERE branch_id = %s",
+                               [user_branch])
+                employee = cursor.fetchall()
+
+        self.fields['activityEmployee'] = forms.ChoiceField(required=True, choices=employee, label='พนักงาน')

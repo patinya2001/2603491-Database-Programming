@@ -1,4 +1,4 @@
-from .forms import FilterInsert, DailyExpense, InsertProduct, CSVUploadForm, FilterData, FilterCSV
+from .forms import FilterInsert, DailyExpense, InsertProduct, ActivityForm, CSVUploadForm, FilterData, FilterCSV
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.db import OperationalError
@@ -13,40 +13,42 @@ import numpy as np
 import ast
 
 def home(request):
-     with connection.cursor() as cursor:
-
-          query = """
-                    SELECT 
-                    วันที่,
-                    รายได้สุทธิรวม
-                    FROM home_daily
-               """  
+     try:
+          with connection.cursor() as cursor:
+               query = """
+                         SELECT 
+                         วันที่,
+                         รายได้สุทธิรวม
+                         FROM home_daily
+                    """  
+               
+               cursor.execute(query)
+               data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+               data = [{'Date': dt.date(d['วันที่'].year, d['วันที่'].day, d['วันที่'].month), 'Net': d['รายได้สุทธิรวม']} for d in data]
+               fig = px.line(data, x='Date', y='Net')
+               fig.update_layout( 
+                    title = 'รายได้รายวัน',
+                    title_x = 0.5,
+                    xaxis_title = 'วันที่', 
+                    yaxis_title = 'รายได้สุทธิ',
+                    plot_bgcolor = 'rgb(23, 32, 66)',
+                    paper_bgcolor = 'rgb(23, 32, 66)',
+                    font = dict(color='rgb(107, 111, 138)', family='Mitr'),
+                    title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+                    xaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+                    yaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+                    xaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)'),
+                    yaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)')
+                    )
+               
+               fig.update_traces(
+                    line=dict(color='rgb(234, 51, 93)'),
+                    hovertemplate = 'วันที่: %{x}<br>รายได้สุทธิ: %{y}',
+                    )
           
-          cursor.execute(query)
-          data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
-          data = [{'Date': dt.date(d['วันที่'].year, d['วันที่'].day, d['วันที่'].month), 'Net': d['รายได้สุทธิรวม']} for d in data]
-          fig = px.line(data, x='Date', y='Net')
-          fig.update_layout( 
-               title = 'รายได้รายวัน',
-               title_x = 0.5,
-               xaxis_title = 'วันที่', 
-               yaxis_title = 'รายได้สุทธิ',
-               plot_bgcolor = 'rgb(23, 32, 66)',
-               paper_bgcolor = 'rgb(23, 32, 66)',
-               font = dict(color='rgb(107, 111, 138)', family='Mitr'),
-               title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-               xaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-               yaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-               xaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)'),
-               yaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)')
-               )
-          
-          fig.update_traces(
-               line=dict(color='rgb(234, 51, 93)'),
-               hovertemplate = 'วันที่: %{x}<br>รายได้สุทธิ: %{y}',
-               )
-     
-     context = {'data': data[-3:], 'chart': fig.to_html}
+          context = {'data': data[-3:], 'chart': fig.to_html}
+     except:
+          context = None
 
      return render(request, 'visualization/home.html', context)
 
@@ -61,7 +63,8 @@ def record(request):
                elif filter['filter'] == 'expenses':
                     form = DailyExpense()
                elif filter['filter'] == 'activity':
-                    form = None
+                    form = ActivityForm(user_branch=request.user.branch)
+               request.session.pop('filter', None)
                request.session['filter'] = {'filter': filter}
 
           context = {'filterform': filterform, 'form': form}
@@ -69,6 +72,7 @@ def record(request):
 
      filterform = FilterInsert(is_superuser=request.user.is_superuser)
      form = InsertProduct()
+     request.session['filter'] = {'filter': {'filter': ('product' if request.user.is_superuser else 'expenses')}}
      context = {'filterform': filterform, 'form': form}
 
      return render(request, 'visualization/record.html', context)
@@ -126,7 +130,41 @@ def insert(request):
                          None
 
           elif filter['filter'] == 'activity':
-               None
+               form = ActivityForm(request.POST)
+               if form.is_valid():
+                    data = form.cleaned_data
+                    if request.user.is_superuser:
+                         if data['activityAbsent'] == False:
+                              query = """
+                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent, activity_late) 
+                                   VALUES ((SELECT branch_id FROM employee WHERE employee_id = %s), %s, %s, %s, %s)
+                                   """
+                              value = [int(data['activityEmployee']), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0), (1 if data['activityLate'] else 0)]
+                         else:
+                              query = """
+                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent) 
+                                   VALUES ((SELECT branch_id FROM employee WHERE employee_id = %s), %s, %s, %s, %s)
+                                   """
+                              value = [int(data['activityEmployee']), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0)]
+                    else:
+                         if data['activityAbsent'] == False:
+                              query = """
+                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent, activity_late) 
+                                   VALUES (%s, %s, %s, %s, %s)
+                                   """
+                              value = [int(request.user.branch), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0), (1 if data['activityLate'] else 0)]
+                         else:
+                              query = """
+                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent) 
+                                   VALUES (%s, %s, %s, %s, %s)
+                                   """
+                              value = [int(request.user.branch), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0)]
+                    try:
+                         with connection.cursor() as cursor:
+                              cursor.execute(query, value)
+                    except OperationalError as e:
+                         None
+               
           request.session.pop('filter', None)
           return HttpResponseRedirect(reverse('complete'))
 
@@ -240,7 +278,6 @@ def saveCSV(request):
      filter = session.get('filter')
 
      if dataframe:
-
           dataframe = pd.read_json(dataframe)
           if filter['filter'] == 'receipts':
                try:
@@ -283,22 +320,21 @@ def saveCSV(request):
                
                receipt_by_product_query = """
                          INSERT INTO receipt_by_product 
-                         (SKU, receipt_id, rbp_quantity, rbp_total, rbp_discount, rbp_net, rbp_cost, rbp_profit) 
-                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                         (SKU, receipt_id, rbp_quantity, rbp_discount_by_item) 
+                         VALUES (%s, %s, %s, %s)
                     """
                
                receipt_query = """
                          INSERT INTO receipt 
-                         (receipt_id, branch_id, receipt_date, receipt_type, receipt_order, receipt_system, receipt_cashier, receipt_customer_name, receipt_customer_contact, receipt_comment, receipt_status) 
-                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                         (receipt_id, branch_id, receipt_date, receipt_type, receipt_order, 
+                         receipt_system, receipt_cashier, receipt_total, receipt_discount, receipt_net, 
+                         receipt_customer_name, receipt_customer_contact, receipt_comment, receipt_status) 
+                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
 
                for i in range(dataframe.shape[0]):
                     data = [
-                         int(dataframe.iloc[i, 4]), dataframe.iloc[i, 1], int(dataframe.iloc[i, 8]), 
-                         float(dataframe.iloc[i, 9]), float(dataframe.iloc[i, 10]), float(dataframe.iloc[i, 11]),
-                         float(dataframe.iloc[i, 12]), float(dataframe.iloc[i, 13])
-                         ]
+                         int(dataframe.iloc[i, 4]), dataframe.iloc[i, 1], int(dataframe.iloc[i, 8]), float(dataframe.iloc[i, 10])]
                     with connection.cursor() as cursor:
                          cursor.execute(receipt_by_product_query, data)
 
@@ -306,7 +342,8 @@ def saveCSV(request):
                     receipt_data = [
                          receipt_dataframe.iloc[i, 1], int(receipt_dataframe.iloc[i, 5]), receipt_dataframe.iloc[i, 0], 
                          receipt_dataframe.iloc[i, 2], receipt_dataframe.iloc[i, 3], receipt_dataframe.iloc[i, 4],
-                         receipt_dataframe.iloc[i, 6], receipt_dataframe.iloc[i, 7], receipt_dataframe.iloc[i, 8],
+                         receipt_dataframe.iloc[i, 6], float(receipt_dataframe.iloc[i, 17]), float(receipt_dataframe.iloc[i, 18]),
+                         float(receipt_dataframe.iloc[i, 19]), receipt_dataframe.iloc[i, 7], receipt_dataframe.iloc[i, 8],
                          receipt_dataframe.iloc[i, 9], receipt_dataframe.iloc[i, 10]
                          ]
                     with connection.cursor() as cursor:

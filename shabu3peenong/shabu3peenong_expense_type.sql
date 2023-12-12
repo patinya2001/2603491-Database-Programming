@@ -16,29 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `django_content_type`
+-- Table structure for table `expense_type`
 --
 
-DROP TABLE IF EXISTS `django_content_type`;
+DROP TABLE IF EXISTS `expense_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `django_content_type` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `app_label` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `model` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `expense_type` (
+  `expense_id` int NOT NULL AUTO_INCREMENT,
+  `expense_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`expense_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `django_content_type`
+-- Dumping data for table `expense_type`
 --
 
-LOCK TABLES `django_content_type` WRITE;
-/*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (1,'admin','logentry'),(3,'auth','group'),(2,'auth','permission'),(4,'contenttypes','contenttype'),(5,'sessions','session'),(7,'users','customuser'),(6,'visualization','dailyperformance');
-/*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
+LOCK TABLES `expense_type` WRITE;
+/*!40000 ALTER TABLE `expense_type` DISABLE KEYS */;
+INSERT INTO `expense_type` VALUES (1,'ค่าน้ำแข็ง/Pepsi/Ete'),(2,'ค่าไอศครีม Ete/ค่าชีส'),(3,'ค่าของทะเล (คุณฝน)'),(4,'ค่าของทะเล (S.Port)'),(5,'น้ำจิ้ม  อสร'),(6,'น้ำจิ้ม เจ๊เล็ก'),(7,'Food Project'),(8,'ค่าเนื้อหมู/ไก่'),(9,'ค่าเนื้อ'),(10,'ค่าลูกชิ้น pfp/เกี๋ยวกุ้ง'),(11,'ค่าผักและของสดอื่น ๆ'),(12,'ค่าของ Makro/Lotus และอื่น ๆ'),(13,'Shopee, Laz และ online อื่น ๆ'),(14,'ค่าเช่า ค่าน้ำไฟ ค่าเน็ต และค่าซ่อม'),(15,'ค่าแรงเบิกล่วงหน้า'),(16,'อื่นๆ');
+/*!40000 ALTER TABLE `expense_type` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-12  8:27:45
+-- Dump completed on 2023-12-12  8:27:44
