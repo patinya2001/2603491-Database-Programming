@@ -55,7 +55,7 @@ class FilterCSV(forms.Form):
         ('itemSales', 'Item Sales'),
     ]
 
-    filter = forms.ChoiceField(choices=field, required=False, label='ประเภทไฟล์')
+    filter = forms.ChoiceField(choices=field, required=False, label='ประเภทไฟล์', initial='receipts')
 
 class DailyExpense(forms.Form):
     expenseType = forms.ChoiceField(required=True, label='ประเภทค่าใช้จ่าย')
@@ -109,3 +109,44 @@ class ActivityForm(forms.Form):
                 employee = cursor.fetchall()
 
         self.fields['activityEmployee'] = forms.ChoiceField(required=True, choices=employee, label='พนักงาน')
+
+class ItemSaleDateForm(forms.Form):
+    monthField = [
+        (1, 'มกราคม'),
+        (2, 'กุมภาพันธ์'),
+        (3, 'มีนาคม'),
+        (4, 'เมษายน'),
+        (5, 'พฤษภาคม'),
+        (6, 'มิถุนายน'),
+        (7, 'กรกฎาคม'),
+        (8, 'สิงหาคม'),
+        (9, 'กันยายน'),
+        (10, 'ตุลาคม'),
+        (11, 'พฤศจิกายน'),
+        (12, 'ธันวาคม'),
+    ]
+
+    yearField = [
+        (2560, '2560'),
+        (2561, '2561'),
+        (2562, '2562'),
+        (2563, '2563'),
+        (2564, '2564'),
+        (2565, '2565'),
+        (2566, '2566'),
+        (2567, '2567'),
+        (2568, '2568'),
+        (2569, '2569'),
+        (2570, '2570'),
+        (2571, '2571'),
+        (2572, '2572'),
+        (2573, '2573'),
+        (2574, '2574'),
+        (2575, '2575'),
+        (2576, '2576'),
+        (2577, '2577'),
+    ]
+
+
+    month = forms.ChoiceField(choices=monthField, required=False, label='เดือน')
+    year = forms.ChoiceField(choices=yearField, required=False, label='ปี', initial=2566)

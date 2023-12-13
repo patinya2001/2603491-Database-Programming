@@ -1,4 +1,4 @@
-from .forms import FilterInsert, DailyExpense, InsertProduct, ActivityForm, CSVUploadForm, FilterData, FilterCSV
+from .forms import FilterInsert, DailyExpense, InsertProduct, ActivityForm, CSVUploadForm, FilterData, FilterCSV, ItemSaleDateForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.db import OperationalError
@@ -247,8 +247,30 @@ def uploadCSV(request):
                               context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm, 
                                         'file': CSVFile, 'addProduct': dataframeNotAdd}
                elif filter['filter'] == 'itemSales':
-                    context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm, 
-                              'file': CSVFile}
+                    with connection.cursor() as cursor:
+                         query = """
+                              SELECT SKU FROM product_list
+                         """
+                         cursor.execute(query)
+                         data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                         dataList = [item['SKU'] for item in data]
+                         itemNotAdd = list(set(dataframe['รหัสSKUสินค้า'].tolist()) - set(dataList))
+                         if itemNotAdd == []:
+                              yearMonth = ItemSaleDateForm()
+                              context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm,
+                                        'yearMonth': yearMonth, 'file': CSVFile}
+                         else:
+                              dataframeNotAdd = dataframe[dataframe['รหัสSKUสินค้า'].isin(itemNotAdd)]
+                              dataframeNotAdd['ราคาต่อหน่วย'] = dataframeNotAdd['ยอดขายรวม'] / dataframeNotAdd['สินค้าที่ขาย']
+                              dataframeNotAdd['ต้นทุนต่อหน่วย'] = dataframeNotAdd['ต้นทุนของสินค้า'] / dataframeNotAdd['สินค้าที่ขาย']
+                              dataframeNotAdd = dataframeNotAdd[['รหัสSKUสินค้า', 'ประเภท', 'รายการ', 'ราคาต่อหน่วย', 'ต้นทุนต่อหน่วย']]
+                              dataframeNotAdd = dataframeNotAdd.drop_duplicates()
+                              dataframeNotAdd = dataframeNotAdd.sort_values(by='รหัสSKUสินค้า')
+                              request.session['addProduct'] = {'addProduct': dataframeNotAdd.to_json(indent=False)}
+                              dataframeNotAdd = dataframeNotAdd.to_html(index=False)
+                              yearMonth = ItemSaleDateForm()
+                              context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm,
+                                        'yearMonth': yearMonth, 'file': CSVFile, 'addProduct': dataframeNotAdd}
                session = {
                 'dataframe': dataframe.to_json(indent=False),
                 'filter': filter,
@@ -265,6 +287,15 @@ def uploadCSV(request):
 
 @login_required
 def addProduct(request):
+     if request.method == 'POST':
+               yearMonth = ItemSaleDateForm(request.POST)
+               if yearMonth.is_valid():
+                    cleanedData = yearMonth.cleaned_data
+                    try:
+                         request.session.pop('yearMonth', None)
+                    except:
+                         None
+                    request.session['yearMonth'] = {'yearMonth': cleanedData}
      session = request.session.get('addProduct')
      dataframe = session.get('addProduct')
      dataframe = pd.read_json(dataframe)
@@ -348,8 +379,54 @@ def saveCSV(request):
                          ]
                     with connection.cursor() as cursor:
                          cursor.execute(receipt_query, receipt_data)     
-          else:
-               None
+          elif filter['filter'] == 'itemSales':
+               try:
+                    productSession = request.session.get('addProduct')
+                    productDataframe = productSession.get('addProduct')
+                    if productDataframe:
+                         mapping = {'Buffet': 1, 'Delivery': 2, 'Take Home': 3, 'A la carte': 4, 
+                                   'รายการปรับ และเก็บเพิ่มเติม': 5, 'เครื่องดื่ม': 6, 'เนื้อสัตว์และอื่นๆ': 7, 'น้ำซุป': 8}
+                         productDataframe = pd.read_json(productDataframe)
+                         productDataframe['ประเภท'] = productDataframe['ประเภท'].replace(mapping)
+                         query = """
+                                   INSERT INTO product_list 
+                                   (SKU, sales_id, product_name, product_price, product_cost) 
+                                   VALUES (%s, %s, %s, %s, %s)
+                              """
+                         for i in range(productDataframe.shape[0]):
+                                   data = [
+                                        int(productDataframe.iloc[i, 0]), int(productDataframe.iloc[i, 1]), productDataframe.iloc[i, 2], 
+                                        float(productDataframe.iloc[i, 3]), float(productDataframe.iloc[i, 4])]
+                                   with connection.cursor() as cursor:
+                                        cursor.execute(query, data)
+                         
+                         request.session.pop('addProduct', None)
+               except:
+                    None
+
+               if request.method == 'POST':
+                    yearMonth = ItemSaleDateForm(request.POST)
+                    if yearMonth.is_valid():
+                         cleanedData = yearMonth.cleaned_data
+               try:
+                    session_YM = request.session.get('yearMonth')
+                    cleanedData = session_YM.get('yearMonth')
+               except:
+                    None
+               
+               receipt_by_product_query = """
+                         INSERT INTO item_sales 
+                         (SKU, item_sales_month, item_sales_year, item_sales_quantity, item_sales_refund, item_sales_refund_price) 
+                         VALUES (%s, %s, %s, %s, %s, %s)
+                    """
+
+               for i in range(dataframe.shape[0]):
+                    data = [
+                         int(dataframe.iloc[i, 1]), int(cleanedData['month']), int(cleanedData['year']), int(dataframe.iloc[i, 3]),
+                         int(dataframe.iloc[i, 5]), float(dataframe.iloc[i, 6])]
+                    with connection.cursor() as cursor:
+                         cursor.execute(receipt_by_product_query, data)
+
      request.session.pop('session', None)
      
      return HttpResponseRedirect(reverse('complete'))

@@ -21,11 +21,16 @@
                 </form>
                 {% if dataframe %}
                     {% if addProduct %}
-                        <form action="{% url 'addProduct' %}" class="csv-submit">
+                        <form method="POST" action="{% url 'addProduct' %}" class="csv-submit">
                     {% else %}
-                        <form action="{% url 'save' %}" class="csv-submit">
+                        <form method="POST" action="{% url 'save' %}" class="csv-submit">
                     {% endif %}
                             <h4>ชื่อไฟล์: {{ file.name }}</h4>
+                            {% if yearMonth %}
+                                <h4 style="margin-bottom: 0%; margin-top: 3%;">เดือนและปีของรายการขายสินค้า</h4>
+                                {% csrf_token %}
+                                {{ yearMonth.as_p }}
+                            {% endif %}
                             <div>
                                 <button type="submit" class="button button-primary">บันทึก</button>
                                 <a href="{% url 'home' %}" class="button button-primary">ย้อนกลับ</a>
