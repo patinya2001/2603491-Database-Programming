@@ -34,7 +34,7 @@ CREATE TABLE `daily_expense` (
   KEY `FK_branch_id_idx` (`branch_id`),
   CONSTRAINT `FK_branch_daily_expense` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`),
   CONSTRAINT `FK_expense_daily_expense` FOREIGN KEY (`expense_id`) REFERENCES `expense_type` (`expense_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `daily_expense` (
 
 LOCK TABLES `daily_expense` WRITE;
 /*!40000 ALTER TABLE `daily_expense` DISABLE KEYS */;
-INSERT INTO `daily_expense` VALUES (1,1,1,'2023-12-11 05:39:00',1111,NULL);
+INSERT INTO `daily_expense` VALUES (1,1,1,'2023-12-11 05:39:00',1111,NULL),(2,3,2,'2023-12-14 17:53:00',324,NULL),(3,1,3,'2023-12-15 04:31:00',324,NULL),(4,13,1,'2023-12-16 04:32:00',678,NULL),(5,14,2,'2023-12-17 04:32:00',765,NULL),(6,5,3,'2023-12-18 04:32:00',335,NULL);
 /*!40000 ALTER TABLE `daily_expense` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-12  8:27:44
+-- Dump completed on 2023-12-15  4:36:53

@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `employee_id` int NOT NULL AUTO_INCREMENT,
   `branch_id` int NOT NULL,
-  `employee_firstname` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `employee_lastname` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `employee_firstname` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `employee_lastname` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`employee_id`),
   KEY `FK_branch_employee_idx` (`branch_id`),
   CONSTRAINT `FK_branch_employee` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`)
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-12  8:27:45
+-- Dump completed on 2023-12-15  4:36:53

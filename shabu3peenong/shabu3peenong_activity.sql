@@ -27,14 +27,15 @@ CREATE TABLE `activity` (
   `branch_id` int NOT NULL,
   `employee_id` int NOT NULL,
   `activity_date` datetime NOT NULL,
-  `activity_absent` int NOT NULL DEFAULT '0',
-  `activity_late` int NOT NULL DEFAULT '0',
+  `activity_absent` tinyint(1) DEFAULT '0',
+  `activity_late` tinyint(1) DEFAULT '0',
+  `advanced_pay` float DEFAULT '0',
   PRIMARY KEY (`activity_id`),
   KEY `FK_branch_activity_idx` (`branch_id`),
   KEY `FK_employee_activity` (`employee_id`),
   CONSTRAINT `FK_branch_activity` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`),
   CONSTRAINT `FK_employee_activity` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +44,7 @@ CREATE TABLE `activity` (
 
 LOCK TABLES `activity` WRITE;
 /*!40000 ALTER TABLE `activity` DISABLE KEYS */;
-INSERT INTO `activity` VALUES (1,2,4,'2023-12-11 22:04:00',0,0),(2,1,1,'2023-12-12 05:27:00',0,0);
+INSERT INTO `activity` VALUES (4,1,2,'2023-12-14 19:04:00',0,0,0),(5,2,4,'2023-12-14 19:15:00',0,0,0),(6,1,1,'2023-12-15 04:34:00',0,0,0),(7,1,2,'2023-12-15 04:34:00',1,0,0),(8,2,3,'2023-12-15 04:34:00',0,1,0),(9,2,4,'2023-12-15 04:34:00',0,0,0),(10,3,5,'2023-12-15 04:35:00',0,0,0),(11,3,6,'2023-12-15 04:35:00',0,0,0);
 /*!40000 ALTER TABLE `activity` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -56,4 +57,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-12  8:27:45
+-- Dump completed on 2023-12-15  4:36:52

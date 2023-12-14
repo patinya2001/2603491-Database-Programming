@@ -86,22 +86,12 @@ def insert(request):
                form = InsertProduct(request.POST)
                if form.is_valid():
                     data = form.cleaned_data
-                    if data['productDescription'] == '':
-                         query = """
-                              INSERT INTO product_list (SKU, sales_id, product_name, product_price, product_cost) 
-                              VALUES (%s, %s, %s, %s, %s)
-                              """
-                         value = [data['SKU'], int(data['salesType']), data['productName'], data['productPrice'], data['productCost']]
-                    else:
-                         query = """
-                              INSERT INTO product_list (SKU, sales_id, product_name, product_price, product_cost, product_description) 
-                              VALUES (%s, %s, %s, %s, %s, %s)
-                              """
-                         value = [data['SKU'], int(data['salesType']), data['productName'], data['productPrice'], data['productCost'], data['productDescription']]
+                    procedure = 'CALL InsertProduct(%s, %s, NULL, %s, %s, %s, %s)'
+                    value = [data['SKU'], data['salesType'], data['productName'], data['productPrice'], data['productCost'], data['productDescription']]
 
                     try:
                          with connection.cursor() as cursor:
-                              cursor.execute(query, value)
+                              cursor.execute(procedure, value)
                     except OperationalError as e:
                          context = {'error': str(ast.literal_eval(str(e))[1])}
                          return render(request, 'visualization/productError.html', context)
@@ -110,22 +100,12 @@ def insert(request):
                form = DailyExpense(request.POST)
                if form.is_valid():
                     data = form.cleaned_data
-                    if data['expenseDescription'] == '':
-                         query = """
-                              INSERT INTO daily_expense (expense_id, branch_id, daily_expense_date, daily_expense_price) 
-                              VALUES (%s, %s, %s, %s)
-                              """
-                         value = [int(data['expenseType']), int(data['expenseBranch']), data['expenseDate'], data['expensePrice']]
-                    else:
-                         query = """
-                              INSERT INTO daily_expense (expense_id, branch_id, daily_expense_date, daily_expense_price, daily_expense_description) 
-                              VALUES (%s, %s, %s, %s, %s)
-                              """
-                         value = [int(data['expenseType']), int(data['expenseBranch']), data['expenseDate'], data['expensePrice'], data['expenseDescription']]
+                    procedure = 'CALL InsertExpense(%s, %s, %s, %s, %s)'
+                    value = [data['expenseType'], data['expenseBranch'], data['expenseDate'], data['expensePrice'], data['expenseDescription']]
 
                     try:
                          with connection.cursor() as cursor:
-                              cursor.execute(query, value)
+                              cursor.execute(procedure, value)
                     except OperationalError as e:
                          None
 
@@ -133,35 +113,12 @@ def insert(request):
                form = ActivityForm(request.POST)
                if form.is_valid():
                     data = form.cleaned_data
-                    if request.user.is_superuser:
-                         if data['activityAbsent'] == False:
-                              query = """
-                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent, activity_late) 
-                                   VALUES ((SELECT branch_id FROM employee WHERE employee_id = %s), %s, %s, %s, %s)
-                                   """
-                              value = [int(data['activityEmployee']), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0), (1 if data['activityLate'] else 0)]
-                         else:
-                              query = """
-                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent) 
-                                   VALUES ((SELECT branch_id FROM employee WHERE employee_id = %s), %s, %s, %s, %s)
-                                   """
-                              value = [int(data['activityEmployee']), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0)]
-                    else:
-                         if data['activityAbsent'] == False:
-                              query = """
-                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent, activity_late) 
-                                   VALUES (%s, %s, %s, %s, %s)
-                                   """
-                              value = [int(request.user.branch), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0), (1 if data['activityLate'] else 0)]
-                         else:
-                              query = """
-                                   INSERT INTO activity (branch_id, employee_id, activity_date, activity_absent) 
-                                   VALUES (%s, %s, %s, %s, %s)
-                                   """
-                              value = [int(request.user.branch), int(data['activityEmployee']), data['activityDate'], (1 if data['activityAbsent'] else 0)]
+                    procedure = 'CALL InsertActivity(%s, %s, %s, %s, %s, %s)'
+                    print(data['activityAbsent'])
+                    value = [request.user.is_superuser, request.user.branch, data['activityEmployee'], data['activityDate'], data['activityAbsent'], data['activityLate']]
                     try:
                          with connection.cursor() as cursor:
-                              cursor.execute(query, value)
+                              cursor.execute(procedure, value)
                     except OperationalError as e:
                          None
                
@@ -243,9 +200,9 @@ def uploadCSV(request):
                               dataframeNotAdd = dataframeNotAdd.drop_duplicates()
                               dataframeNotAdd = dataframeNotAdd.sort_values(by='รหัสSKUสินค้า')
                               request.session['addProduct'] = {'addProduct': dataframeNotAdd.to_json(indent=False)}
-                              dataframeNotAdd = dataframeNotAdd.to_html(index=False)
                               context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm, 
-                                        'file': CSVFile, 'addProduct': dataframeNotAdd}
+                                        'file': CSVFile, 'addProduct': dataframeNotAdd.to_html(index=False)}
+                              
                elif filter['filter'] == 'itemSales':
                     with connection.cursor() as cursor:
                          query = """
@@ -267,10 +224,9 @@ def uploadCSV(request):
                               dataframeNotAdd = dataframeNotAdd.drop_duplicates()
                               dataframeNotAdd = dataframeNotAdd.sort_values(by='รหัสSKUสินค้า')
                               request.session['addProduct'] = {'addProduct': dataframeNotAdd.to_json(indent=False)}
-                              dataframeNotAdd = dataframeNotAdd.to_html(index=False)
                               yearMonth = ItemSaleDateForm()
                               context = {'dataframe': dataframe.to_html(index=False), 'CSVForm': CSVForm, 'filterForm': filterForm,
-                                        'yearMonth': yearMonth, 'file': CSVFile, 'addProduct': dataframeNotAdd}
+                                        'yearMonth': yearMonth, 'file': CSVFile, 'addProduct': dataframeNotAdd.to_html(index=False)}
                session = {
                 'dataframe': dataframe.to_json(indent=False),
                 'filter': filter,
@@ -315,21 +271,16 @@ def saveCSV(request):
                     productSession = request.session.get('addProduct')
                     productDataframe = productSession.get('addProduct')
                     if productDataframe:
-                         mapping = {'Buffet': 1, 'Delivery': 2, 'Take Home': 3, 'A la carte': 4, 
-                                   'รายการปรับ และเก็บเพิ่มเติม': 5, 'เครื่องดื่ม': 6, 'เนื้อสัตว์และอื่นๆ': 7, 'น้ำซุป': 8}
                          productDataframe = pd.read_json(productDataframe)
-                         productDataframe['ประเภท'] = productDataframe['ประเภท'].replace(mapping)
-                         query = """
-                                   INSERT INTO product_list 
-                                   (SKU, sales_id, product_name, product_price, product_cost) 
-                                   VALUES (%s, %s, %s, %s, %s)
-                              """
+                         procedure = 'CALL InsertProduct(%s, NULL, %s, %s, %s, %s, %s)'
+
                          for i in range(productDataframe.shape[0]):
                                    data = [
-                                        int(productDataframe.iloc[i, 0]), int(productDataframe.iloc[i, 1]), productDataframe.iloc[i, 2], 
-                                        float(productDataframe.iloc[i, 3]), float(productDataframe.iloc[i, 4])]
+                                        productDataframe.iloc[i, 0], productDataframe.iloc[i, 1], productDataframe.iloc[i, 2], 
+                                        productDataframe.iloc[i, 3], productDataframe.iloc[i, 4]
+                                        ]
                                    with connection.cursor() as cursor:
-                                        cursor.execute(query, data)
+                                        cursor.execute(procedure, data)
                          
                          request.session.pop('addProduct', None)
                except:
@@ -340,65 +291,47 @@ def saveCSV(request):
                except:
                     dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%Y %H:%M"))
 
-               receipt_mapping = {'ชาบู 3 พี่น้อง | สาขาพหลโยธิน 52': '1', 'ชาบู 3 พี่น้อง | สาขาม.รังสิต': '2', 'Take ชาบู 3 พี่น้อง | สาขารังสิต 200 ปี': '3'}
-               dataframe['ร้านค้า'] = dataframe['ร้านค้า'].replace(receipt_mapping)
                dataframe[['ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 'ความคิดเห็น']] = dataframe[['ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 'ความคิดเห็น']].replace(np.nan, 'NA')
-               receipt_dataframe = dataframe.groupby(['วันที่', 'เลขที่ใบเสร็จ', 'ประเภทใบเสร็จ', 
-                                                       'ทางเลือกสั่งออเดอร์', 'ระบบขายหน้าร้าน', 'ร้านค้า', 
-                                                       'ชื่อแคชเชียร์', 'ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 
-                                                       'ความคิดเห็น', 'สถานะ']).sum().reset_index()
+               receipt_dataframe = dataframe.groupby(['วันที่', 'เลขที่ใบเสร็จ', 'ประเภทใบเสร็จ', 'ทางเลือกสั่งออเดอร์', 'ระบบขายหน้าร้าน', 'ร้านค้า', 
+                                                       'ชื่อแคชเชียร์', 'ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 'ความคิดเห็น', 'สถานะ']).sum().reset_index()
                receipt_dataframe[['ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 'ความคิดเห็น']] = receipt_dataframe[['ชื่อลูกค้า', 'รายชื่อติดต่อลูกค้า', 'ความคิดเห็น']].replace('NA', np.nan)
                
-               receipt_by_product_query = """
-                         INSERT INTO receipt_by_product 
-                         (SKU, receipt_id, rbp_quantity, rbp_discount_by_item) 
-                         VALUES (%s, %s, %s, %s)
-                    """
-               
-               receipt_query = """
-                         INSERT INTO receipt 
-                         (receipt_id, branch_id, receipt_date, receipt_type, receipt_order, 
-                         receipt_system, receipt_cashier, receipt_total, receipt_discount, receipt_net, 
-                         receipt_customer_name, receipt_customer_contact, receipt_comment, receipt_status) 
-                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """
+               receipt_procedure = 'CALL InsertReceipt(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 
-               for i in range(dataframe.shape[0]):
-                    data = [
-                         int(dataframe.iloc[i, 4]), dataframe.iloc[i, 1], int(dataframe.iloc[i, 8]), float(dataframe.iloc[i, 10])]
-                    with connection.cursor() as cursor:
-                         cursor.execute(receipt_by_product_query, data)
+               receipt_by_product_procedure = 'CALL InsertReceiptByProduct(%s, %s, %s, %s)'
 
                for i in range(receipt_dataframe.shape[0]):
                     receipt_data = [
-                         receipt_dataframe.iloc[i, 1], int(receipt_dataframe.iloc[i, 5]), receipt_dataframe.iloc[i, 0], 
+                         receipt_dataframe.iloc[i, 1], receipt_dataframe.iloc[i, 5], receipt_dataframe.iloc[i, 0], 
                          receipt_dataframe.iloc[i, 2], receipt_dataframe.iloc[i, 3], receipt_dataframe.iloc[i, 4],
-                         receipt_dataframe.iloc[i, 6], float(receipt_dataframe.iloc[i, 17]), float(receipt_dataframe.iloc[i, 18]),
-                         float(receipt_dataframe.iloc[i, 19]), receipt_dataframe.iloc[i, 7], receipt_dataframe.iloc[i, 8],
+                         receipt_dataframe.iloc[i, 6], receipt_dataframe.iloc[i, 17], receipt_dataframe.iloc[i, 18],
+                         receipt_dataframe.iloc[i, 19], receipt_dataframe.iloc[i, 7], receipt_dataframe.iloc[i, 8],
                          receipt_dataframe.iloc[i, 9], receipt_dataframe.iloc[i, 10]
                          ]
                     with connection.cursor() as cursor:
-                         cursor.execute(receipt_query, receipt_data)     
+                         cursor.execute(receipt_procedure, receipt_data) 
+
+               for i in range(dataframe.shape[0]):
+                    data = [
+                         dataframe.iloc[i, 4], dataframe.iloc[i, 1], dataframe.iloc[i, 8], dataframe.iloc[i, 10]]
+                    with connection.cursor() as cursor:
+                         cursor.execute(receipt_by_product_procedure, data)
+    
           elif filter['filter'] == 'itemSales':
                try:
                     productSession = request.session.get('addProduct')
                     productDataframe = productSession.get('addProduct')
                     if productDataframe:
-                         mapping = {'Buffet': 1, 'Delivery': 2, 'Take Home': 3, 'A la carte': 4, 
-                                   'รายการปรับ และเก็บเพิ่มเติม': 5, 'เครื่องดื่ม': 6, 'เนื้อสัตว์และอื่นๆ': 7, 'น้ำซุป': 8}
                          productDataframe = pd.read_json(productDataframe)
-                         productDataframe['ประเภท'] = productDataframe['ประเภท'].replace(mapping)
-                         query = """
-                                   INSERT INTO product_list 
-                                   (SKU, sales_id, product_name, product_price, product_cost) 
-                                   VALUES (%s, %s, %s, %s, %s)
-                              """
+                         procedure = 'CALL InsertProduct(%s, NULL, %s, %s, %s, %s, %s)'
+
                          for i in range(productDataframe.shape[0]):
                                    data = [
-                                        int(productDataframe.iloc[i, 0]), int(productDataframe.iloc[i, 1]), productDataframe.iloc[i, 2], 
-                                        float(productDataframe.iloc[i, 3]), float(productDataframe.iloc[i, 4])]
+                                        productDataframe.iloc[i, 0], productDataframe.iloc[i, 1], productDataframe.iloc[i, 2], 
+                                        productDataframe.iloc[i, 3], productDataframe.iloc[i, 4]
+                                        ]
                                    with connection.cursor() as cursor:
-                                        cursor.execute(query, data)
+                                        cursor.execute(procedure, data)
                          
                          request.session.pop('addProduct', None)
                except:
@@ -414,18 +347,15 @@ def saveCSV(request):
                except:
                     None
                
-               receipt_by_product_query = """
-                         INSERT INTO item_sales 
-                         (SKU, item_sales_month, item_sales_year, item_sales_quantity, item_sales_refund, item_sales_refund_price) 
-                         VALUES (%s, %s, %s, %s, %s, %s)
-                    """
+               procedure = 'CALL InsertItemSales(%s, %s, %s, %s, %s, %s)'
 
                for i in range(dataframe.shape[0]):
                     data = [
-                         int(dataframe.iloc[i, 1]), int(cleanedData['month']), int(cleanedData['year']), int(dataframe.iloc[i, 3]),
-                         int(dataframe.iloc[i, 5]), float(dataframe.iloc[i, 6])]
+                         dataframe.iloc[i, 1], cleanedData['month'], cleanedData['year'], 
+                         dataframe.iloc[i, 3], dataframe.iloc[i, 5], dataframe.iloc[i, 6]
+                    ]
                     with connection.cursor() as cursor:
-                         cursor.execute(receipt_by_product_query, data)
+                         cursor.execute(procedure, data)
 
      request.session.pop('session', None)
      

@@ -23,20 +23,20 @@ DROP TABLE IF EXISTS `receipt`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `receipt` (
-  `receipt_id` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receipt_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `branch_id` int NOT NULL,
   `receipt_date` datetime NOT NULL,
   `receipt_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `receipt_order` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `receipt_system` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `receipt_cashier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receipt_order` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receipt_system` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receipt_cashier` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `receipt_total` float NOT NULL,
   `receipt_discount` float NOT NULL,
   `receipt_net` float NOT NULL,
-  `receipt_customer_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `receipt_customer_contact` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `receipt_comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `receipt_status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receipt_customer_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receipt_customer_contact` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receipt_comment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receipt_status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`receipt_id`),
   KEY `FK_branch_id_idx` (`branch_id`),
   CONSTRAINT `FK_branch_receipt` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`)
@@ -62,4 +62,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-12  8:27:45
+-- Dump completed on 2023-12-15  4:36:52
