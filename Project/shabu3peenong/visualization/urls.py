@@ -7,7 +7,8 @@ urlpatterns = [
     path('record/insert/', views.insert, name='insert'),
     path('complete/', views.complete, name='complete'),
     path('showinfo/', views.showInfo, name='showinfo'),
+    path('showinfo/cleanMonth', views.cleanMonth, name='cleanMonth'),
     path('upload/', views.uploadCSV, name='upload'),
     path('upload/save/', views.saveCSV, name='save'),
-    path('upload/addProduct/', views.addProduct, name='addProduct'),
+    path('upload/product/', views.product, name='product'),
 ]

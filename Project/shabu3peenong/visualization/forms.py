@@ -1,5 +1,6 @@
 from django import forms
 from django.db import connection
+from datetime import datetime
 
 class FilterInsert(forms.Form):
     def __init__(self, *args, is_superuser=False, **kwargs):
@@ -10,12 +11,14 @@ class FilterInsert(forms.Form):
                 ('product', 'เพิ่มสินค้า'),
                 ('expenses', 'ค่าใช้จ่าย'),
                 ('activity', 'เช็คชื่อพนักงาน'),
+                ('pay', 'บันทึกการเบิกเงินล่วงหน้า'),
             ]
             default = 'product'
         else:
             field_choices = [
                 ('expenses', 'ค่าใช้จ่าย'),
                 ('activity', 'เช็คชื่อพนักงาน'),
+                ('pay', 'บันทึกการเบิกเงินล่วงหน้า'),
             ]
             default = 'expenses'
 
@@ -42,12 +45,17 @@ class CSVUploadForm(forms.Form):
     CSVFile = forms.FileField(label='เลือกไฟล์ CSV')
 
 class FilterData(forms.Form):
-    field = [
-        ('showInfo', 'ข้อมูลทั้งหมด'),
-        ('average', 'ค่าเฉลี่ย'),
-    ]
+    def __init__(self, *args, init, **kwargs):
+        super(FilterData, self).__init__(*args, **kwargs)
 
-    filter = forms.ChoiceField(choices=field, required=False, label='หมวดหมู่')
+        field = [
+            ('summary', 'สรุปภาพรวม'),
+            ('income', 'สรุปรายได้'),
+            ('expenses', 'สรุปค่าใช้จ่าย'),
+            ('employee', 'สรุปพนักงาน'),
+        ]
+
+        self.fields['filter'] = forms.ChoiceField(choices=field, required=False, label='หมวดหมู่', initial=init)
 
 class FilterCSV(forms.Form):
     field = [
@@ -110,6 +118,31 @@ class ActivityForm(forms.Form):
 
         self.fields['activityEmployee'] = forms.ChoiceField(required=True, choices=employee, label='พนักงาน')
 
+class AdvancedPay(forms.Form):
+    advancedPayEmployee = forms.ChoiceField(required=True, label='พนักงาน')
+    advancedPayDate = forms.DateTimeField(
+        required=True,
+        label='วันที่-เวลา',
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        input_formats=['%Y-%m-%dT%H:%M'],
+    )
+    advancedPayAmount = forms.FloatField(required=True, label='จำนวนเงิน')
+
+    def __init__(self, *args, user_branch=0, **kwargs):
+        super(AdvancedPay, self).__init__(*args, **kwargs)
+
+        if user_branch == 0:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT employee_id, CONCAT(employee_firstname, ' ', employee_lastname) FROM employee")
+                employee = cursor.fetchall()
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT employee_id, CONCAT(employee_firstname, ' ', employee_lastname) FROM employee WHERE branch_id = %s",
+                               [user_branch])
+                employee = cursor.fetchall()
+
+        self.fields['advancedPayEmployee'] = forms.ChoiceField(required=True, choices=employee, label='พนักงาน')
+
 class ItemSaleDateForm(forms.Form):
     monthField = [
         (1, 'มกราคม'),
@@ -150,3 +183,24 @@ class ItemSaleDateForm(forms.Form):
 
     month = forms.ChoiceField(choices=monthField, required=False, label='เดือน')
     year = forms.ChoiceField(choices=yearField, required=False, label='ปี', initial=2566)
+
+class MonthYearFilter(forms.Form):
+    def __init__(self, *args, monthYear=datetime.now().strftime("%Y-%m"), **kwargs):
+        super(MonthYearFilter, self).__init__(*args, **kwargs)
+
+        monthYearField = [
+            ('2023-01', 'มกราคม 2566'),
+            ('2023-02', 'กุมภาพันธ์ 2566'),
+            ('2023-03', 'มีนาคม 2566'),
+            ('2023-04', 'เมษายน 2566'),
+            ('2023-05', 'พฤษภาคม 2566'),
+            ('2023-06', 'มิถุนายน 2566'),
+            ('2023-07', 'กรกฎาคม 2566'),
+            ('2023-08', 'สิงหาคม 2566'),
+            ('2023-09', 'กันยายน 2566'),
+            ('2023-10', 'ตุลาคม 2566'),
+            ('2023-11', 'พฤศจิกายน 2566'),
+            ('2023-12', 'ธันวาคม 2566'),
+        ]
+
+        self.fields['monthYear'] = forms.ChoiceField(choices=monthYearField, required=False, label='เดือนและปี', initial=monthYear)

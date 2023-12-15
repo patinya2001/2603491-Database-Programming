@@ -321,6 +321,10 @@ input[type='file'] {
     overflow: hidden;
 }
 
+.panel h3 {
+    color: #ea335d;
+}
+
 .list li {
     display: flex;
     justify-content: space-between;
@@ -353,4 +357,10 @@ input[type='file'] {
 
 .csv-submit div a {
     margin-left: 12px;
+}
+
+/* show info */
+
+.text-center {
+    text-align: center;
 }

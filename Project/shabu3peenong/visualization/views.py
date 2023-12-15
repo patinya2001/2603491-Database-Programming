@@ -1,4 +1,4 @@
-from .forms import FilterInsert, DailyExpense, InsertProduct, ActivityForm, CSVUploadForm, FilterData, FilterCSV, ItemSaleDateForm
+from .forms import FilterInsert, DailyExpense, InsertProduct, ActivityForm, CSVUploadForm, FilterData, FilterCSV, ItemSaleDateForm, MonthYearFilter, AdvancedPay
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.db import OperationalError
@@ -11,6 +11,32 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 import ast
+
+def updateFig(fig, type, title, xlab, ylab):
+     fig.update_layout( 
+          title = title,
+          title_x = 0.5,
+          xaxis_title = xlab, 
+          yaxis_title = ylab,
+          plot_bgcolor = 'rgb(23, 32, 66)',
+          paper_bgcolor = 'rgb(23, 32, 66)',
+          font = dict(color='rgb(107, 111, 138)', family='Mitr'),
+          title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+          xaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+          yaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
+          xaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)'),
+          yaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)')
+          )
+     
+     if type == 'line':
+          fig.update_traces(
+               line=dict(color='rgb(234, 51, 93)'),
+               hovertemplate = 'วันที่: %{x}<br>รายได้สุทธิ: %{y}',
+               )
+     elif type == 'bar':
+          fig.update_traces(marker=dict(color='rgb(234, 51, 93)', line=dict(color='rgb(234, 51, 93)', width=0)))
+
+     return fig
 
 def home(request):
      try:
@@ -26,25 +52,7 @@ def home(request):
                data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                data = [{'Date': dt.date(d['วันที่'].year, d['วันที่'].day, d['วันที่'].month), 'Net': d['รายได้สุทธิรวม']} for d in data]
                fig = px.line(data, x='Date', y='Net')
-               fig.update_layout( 
-                    title = 'รายได้รายวัน',
-                    title_x = 0.5,
-                    xaxis_title = 'วันที่', 
-                    yaxis_title = 'รายได้สุทธิ',
-                    plot_bgcolor = 'rgb(23, 32, 66)',
-                    paper_bgcolor = 'rgb(23, 32, 66)',
-                    font = dict(color='rgb(107, 111, 138)', family='Mitr'),
-                    title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-                    xaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-                    yaxis_title_font = dict(color='rgb(255, 255, 255)', family='Mitr'),
-                    xaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)'),
-                    yaxis = dict(gridcolor='rgb(107, 111, 138)', zerolinecolor='rgb(107, 111, 138)')
-                    )
-               
-               fig.update_traces(
-                    line=dict(color='rgb(234, 51, 93)'),
-                    hovertemplate = 'วันที่: %{x}<br>รายได้สุทธิ: %{y}',
-                    )
+               fig = updateFig(fig, 'line', 'รายได้รายวัน', 'วันที่', 'รายได้สุทธิ')
           
           context = {'data': data[-3:], 'chart': fig.to_html}
      except:
@@ -64,6 +72,8 @@ def record(request):
                     form = DailyExpense()
                elif filter['filter'] == 'activity':
                     form = ActivityForm(user_branch=request.user.branch)
+               elif filter['filter'] == 'pay':
+                    form = AdvancedPay(user_branch=request.user.branch)
                request.session.pop('filter', None)
                request.session['filter'] = {'filter': filter}
 
@@ -94,7 +104,7 @@ def insert(request):
                               cursor.execute(procedure, value)
                     except OperationalError as e:
                          context = {'error': str(ast.literal_eval(str(e))[1])}
-                         return render(request, 'visualization/productError.html', context)
+                         return render(request, 'visualization/error.html', context)
                          
           elif filter['filter'] == 'expenses':
                form = DailyExpense(request.POST)
@@ -114,14 +124,23 @@ def insert(request):
                if form.is_valid():
                     data = form.cleaned_data
                     procedure = 'CALL InsertActivity(%s, %s, %s, %s, %s, %s)'
-                    print(data['activityAbsent'])
                     value = [request.user.is_superuser, request.user.branch, data['activityEmployee'], data['activityDate'], data['activityAbsent'], data['activityLate']]
                     try:
                          with connection.cursor() as cursor:
                               cursor.execute(procedure, value)
                     except OperationalError as e:
                          None
-               
+          elif filter['filter'] == 'pay':
+               form = AdvancedPay(request.POST)
+               if form.is_valid():
+                    data = form.cleaned_data
+                    procedure = 'CALL UpdateAdvancedPay(%s, %s, %s)'
+                    value = [data['advancedPayEmployee'], data['advancedPayDate'], data['advancedPayAmount']]
+                    try:
+                         with connection.cursor() as cursor:
+                              cursor.execute(procedure, value)
+                    except OperationalError as e:
+                         None
           request.session.pop('filter', None)
           return HttpResponseRedirect(reverse('complete'))
 
@@ -131,45 +150,152 @@ def complete(request):
 
 @login_required
 def showInfo(request):
-     def queryField(case):          
-          if case == 'showInfo':
-               query = """
-                         SELECT *
-                         FROM visualization_dailyperformance
-                    """
-               
-          return query
-
      if request.method == 'POST':
-          form = FilterData(request.POST)
+          session = request.session.get('monthFilterCleaned')
+          monthFilterCleaned = session.get('monthFilterCleaned')
+
+          if monthFilterCleaned['monthYear'] == '':
+               monthFilterCleaned = {'monthYear': datetime.now().strftime("%Y-%m")}
+
+          filterSession = request.session.get('showInfoFilter')
+          showInfoFilter = filterSession.get('showInfoFilter')
+          
+          form = FilterData(request.POST, init=showInfoFilter['filter'])
           if form.is_valid():
                filter = form.cleaned_data
-               with connection.cursor() as cursor:
-                    query = queryField(filter['filter'])
-                    cursor.execute(query)
-                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
-                    if filter['filter'] == 'showInfo':
-                         for date in data:
-                              date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
-                         fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
-                         dataframe = pd.DataFrame(data)
-                         context = {'dataframe': dataframe.to_html(index=False), 'chart': fig.to_html(), 'form': form}
-                    else:
-                         dataframe = pd.DataFrame(data)
-                         context = {'dataframe': dataframe.to_html(index=False), 'form': form}
-     else:
-          with connection.cursor() as cursor:
-               query = queryField('showInfo')
-               cursor.execute(query)
-               data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
-               for date in data:
-                    date['date'] = datetime(date['date'].year, date['date'].month, date['date'].day)
-          fig = px.bar(data, x='date', y=['cash', 'transferPayment', 'delivery'])
-          dataframe = pd.DataFrame(data)
-          form = FilterData()
-          context = {'dataframe': dataframe.to_html(index=False), 'chart': fig.to_html(), 'form': form}
 
-     return render(request, 'visualization/showinfo.html', context)
+               if filter['filter'] != '':
+                    showInfoFilter['filter'] = ''
+
+               if filter['filter'] == 'summary' or showInfoFilter['filter'] == 'summary':
+                    context = {'form': FilterData(init='summary'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear'])}
+                    with connection.cursor() as cursor:
+                         query = """
+                                   SELECT total_expense, avg_expense, total_income, avg_income
+                                   FROM summary_view
+                                   WHERE month_year = %s
+                                   """
+                         cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                         data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                         context.update(data[0])
+                    
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT branch_name, total_income
+                                        FROM total_income_by_branch
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='branch_name', y='total_income')
+                              fig = updateFig(fig, 'bar', 'รายได้แยกตามสาขา', 'สาขา', 'รายได้รวม')
+                              context.update({'chart1': fig.to_html()})
+                    except:
+                         None
+                    
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT receipt_type, total_income
+                                        FROM total_income_by_type
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='receipt_type', y='total_income')
+                              fig = updateFig(fig, 'bar', 'รายได้แยกตามประเภทใบเสร็จ', 'ประเภทใบเสร็จ', 'รายได้รวม')
+                              context.update({'chart2': fig.to_html()})
+                    except:
+                         None
+
+                    if filter['filter'] == '':
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': showInfoFilter}
+                    else:
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': filter}
+
+                    return render(request, 'visualization/showinfo.html', context)
+               
+               elif filter['filter'] == 'income' or showInfoFilter['filter'] == 'income':
+                    with connection.cursor() as cursor:
+                         query = """
+                                   SELECT total_expense, avg_expense, total_income, avg_income
+                                   FROM summary_view
+                                   WHERE month_year = %s
+                                   """
+                         cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                         data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+
+                    if filter['filter'] == '':
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': showInfoFilter}
+                    else:
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': filter}
+                    
+                    context = {'form': FilterData(init='income'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear'])}
+                    context.update(data[0])
+                    return render(request, 'visualization/showinfo.html', context)
+
+     else:
+          form = FilterData(init='summary')
+          monthFilter = MonthYearFilter(monthYear=datetime.now().strftime("%Y-%m"))
+          request.session.pop('showInfoFilter', None)
+          request.session['showInfoFilter'] = {'showInfoFilter': {'filter': 'summary'}}
+          context = {'form': form, 'monthFilter': monthFilter}
+          with connection.cursor() as cursor:
+               query = """
+                         SELECT total_expense, avg_expense, total_income, avg_income
+                         FROM summary_view
+                         WHERE month_year = %s
+                         """
+               cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+               data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+               context.update(data[0])
+
+          try:
+               with connection.cursor() as cursor:
+                    query = """
+                              SELECT branch_name, total_income
+                              FROM total_income_by_branch
+                              WHERE month_year = %s
+                              """
+                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    fig = px.bar(data, x='branch_name', y='total_income')
+                    fig = updateFig(fig, 'bar', 'รายได้แยกตามสาขา', 'สาขา', 'รายได้รวม')
+                    context.update({'chart1': fig.to_html()})
+          except:
+               None
+
+          try:
+               with connection.cursor() as cursor:
+                    query = """
+                              SELECT receipt_type, total_income
+                              FROM total_income_by_type
+                              WHERE month_year = %s
+                              """
+                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    fig = px.bar(data, x='receipt_type', y='total_income')
+                    fig = updateFig(fig, 'bar', 'รายได้แยกตามประเภทใบเสร็จ', 'ประเภทใบเสร็จ', 'รายได้รวม')
+                    context.update({'chart2': fig.to_html()})
+          except:
+               None
+          
+          return render(request, 'visualization/showinfo.html', context)
+
+@login_required
+def cleanMonth(request):
+     if request.method == 'POST':
+          monthFilter = MonthYearFilter(request.POST)
+          if monthFilter.is_valid():
+               monthFilterCleaned = monthFilter.cleaned_data
+               request.session.pop('monthFilterCleaned', None)
+               request.session['monthFilterCleaned'] = {'monthFilterCleaned': monthFilterCleaned}
+          return showInfo(request)
 
 @login_required
 def uploadCSV(request):
@@ -242,7 +368,7 @@ def uploadCSV(request):
      return render(request, 'visualization/uploadCSV.html', context)
 
 @login_required
-def addProduct(request):
+def product(request):
      if request.method == 'POST':
                yearMonth = ItemSaleDateForm(request.POST)
                if yearMonth.is_valid():
@@ -256,7 +382,7 @@ def addProduct(request):
      dataframe = session.get('addProduct')
      dataframe = pd.read_json(dataframe)
      context = {'addProduct': dataframe.to_html(index=False)}
-     return render(request, 'visualization/addProduct.html', context)
+     return render(request, 'visualization/product.html', context)
 
 @login_required
 def saveCSV(request):
@@ -286,6 +412,8 @@ def saveCSV(request):
                except:
                     None
 
+               dataframe['วันที่'] = (pd.to_datetime(dataframe['วันที่'], format='%d/%m/%y %H:%M')).dt.strftime('%m/%d/%y %H:%M')
+               
                try:
                     dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%y %H:%M"))
                except:
