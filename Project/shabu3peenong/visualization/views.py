@@ -168,7 +168,7 @@ def showInfo(request):
                     showInfoFilter['filter'] = ''
 
                if filter['filter'] == 'summary' or showInfoFilter['filter'] == 'summary':
-                    context = {'form': FilterData(init='summary'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear'])}
+                    context = {'form': FilterData(init='summary'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear']), 'filter': 1}
                     with connection.cursor() as cursor:
                          query = """
                                    SELECT total_expense, avg_expense, total_income, avg_income
@@ -179,6 +179,92 @@ def showInfo(request):
                          data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                          context.update(data[0])
                     
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT branch_name, total_income
+                                        FROM total_income_by_branch
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='branch_name', y='total_income')
+                              fig = updateFig(fig, 'bar', 'รายได้แยกตามสาขา', 'สาขา', 'รายได้รวม')
+                              context.update({'chart1': fig.to_html()})
+                    except:
+                         None
+                    
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT branch_name, total_expense
+                                        FROM expense_by_branch
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='branch_name', y='total_expense')
+                              fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามสาขา', 'สาขา', 'ค่าใช้จ่ายรวม')
+                              context.update({'chart2': fig.to_html()})
+                    except:
+                         None
+                    
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT receipt_type, total_income
+                                        FROM total_income_by_type
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='receipt_type', y='total_income')
+                              fig = updateFig(fig, 'bar', 'รายได้แยกตามประเภทใบเสร็จ', 'ประเภทใบเสร็จ', 'รายได้รวม')
+                              context.update({'chart3': fig.to_html()})
+                    except:
+                         None
+
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT expense_name, total_expense
+                                        FROM expense_by_type
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='expense_name', y='total_expense')
+                              fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามประเภท', 'ประเภทค่าใช้จ่าย', 'ค่าใช้จ่ายรวม')
+                              context.update({'chart4': fig.to_html()})
+                    except:
+                         None
+
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT product_name, total_sales
+                                        FROM top_ten_sales
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='product_name', y='total_sales')
+                              fig = updateFig(fig, 'bar', 'Top 10 Sales', 'ชื่อสินค้า', 'จำนวน')
+                              context.update({'chart5': fig.to_html()})
+                    except:
+                         None
+
+                    if filter['filter'] == '':
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': showInfoFilter}
+                    else:
+                         request.session.pop('showInfoFilter', None)
+                         request.session['showInfoFilter'] = {'showInfoFilter': filter}
+
+                    return render(request, 'visualization/showinfo.html', context)
+               
+               elif filter['filter'] == 'income' or showInfoFilter['filter'] == 'income':
+                    context = {'form': FilterData(init='income'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear']), 'filter': 2}
                     try:
                          with connection.cursor() as cursor:
                               query = """
@@ -218,15 +304,55 @@ def showInfo(request):
 
                     return render(request, 'visualization/showinfo.html', context)
                
-               elif filter['filter'] == 'income' or showInfoFilter['filter'] == 'income':
-                    with connection.cursor() as cursor:
-                         query = """
-                                   SELECT total_expense, avg_expense, total_income, avg_income
-                                   FROM summary_view
-                                   WHERE month_year = %s
-                                   """
-                         cursor.execute(query, (monthFilterCleaned['monthYear'],))
-                         data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+               elif filter['filter'] == 'expenses' or showInfoFilter['filter'] == 'expenses':
+                    context = {'form': FilterData(init='expenses'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear']), 'filter': 3}
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT branch_name, total_expense
+                                        FROM expense_by_branch
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='branch_name', y='total_expense')
+                              fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามสาขา', 'สาขา', 'ค่าใช้จ่ายรวม')
+                              context.update({'chart1': fig.to_html()})
+                    except:
+                         None
+                    
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT expense_name, total_expense
+                                        FROM expense_by_type
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              fig = px.bar(data, x='expense_name', y='total_expense')
+                              fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามประเภท', 'ประเภทค่าใช้จ่าย', 'ค่าใช้จ่ายรวม')
+                              context.update({'chart2': fig.to_html()})
+                    except:
+                         None
+
+                    try:
+                         with connection.cursor() as cursor:
+                              query = """
+                                        SELECT month_day, totoal_expense
+                                        FROM total_expense_by_day
+                                        WHERE month_year = %s
+                                        """
+                              cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                              data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                              print(data)
+                              data = [{'date': dt.date(d['วันที่'].year, d['วันที่'].day, d['วันที่'].month), 'total_expense': d['total_expense']} for d in data]
+                              print(data)
+                              fig = px.line(data, x='date', y='total_expense')
+                              fig = updateFig(fig, 'line', 'รายจ่ายรายวัน', 'วันที่', 'ค่าใช้จ่ายรวม')
+                              context.update({'chart3': fig.to_html()})
+                    except:
+                         None
 
                     if filter['filter'] == '':
                          request.session.pop('showInfoFilter', None)
@@ -234,9 +360,7 @@ def showInfo(request):
                     else:
                          request.session.pop('showInfoFilter', None)
                          request.session['showInfoFilter'] = {'showInfoFilter': filter}
-                    
-                    context = {'form': FilterData(init='income'), 'monthFilter': MonthYearFilter(monthYear=monthFilterCleaned['monthYear'])}
-                    context.update(data[0])
+
                     return render(request, 'visualization/showinfo.html', context)
 
      else:
@@ -244,7 +368,7 @@ def showInfo(request):
           monthFilter = MonthYearFilter(monthYear=datetime.now().strftime("%Y-%m"))
           request.session.pop('showInfoFilter', None)
           request.session['showInfoFilter'] = {'showInfoFilter': {'filter': 'summary'}}
-          context = {'form': form, 'monthFilter': monthFilter}
+          context = {'form': form, 'monthFilter': monthFilter, 'filter': 1}
           with connection.cursor() as cursor:
                query = """
                          SELECT total_expense, avg_expense, total_income, avg_income
@@ -273,6 +397,21 @@ def showInfo(request):
           try:
                with connection.cursor() as cursor:
                     query = """
+                              SELECT branch_name, total_expense
+                              FROM expense_by_branch
+                              WHERE month_year = %s
+                              """
+                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    fig = px.bar(data, x='branch_name', y='total_expense')
+                    fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามสาขา', 'สาขา', 'ค่าใช้จ่ายรวม')
+                    context.update({'chart2': fig.to_html()})
+          except:
+               None
+
+          try:
+               with connection.cursor() as cursor:
+                    query = """
                               SELECT receipt_type, total_income
                               FROM total_income_by_type
                               WHERE month_year = %s
@@ -281,7 +420,37 @@ def showInfo(request):
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='receipt_type', y='total_income')
                     fig = updateFig(fig, 'bar', 'รายได้แยกตามประเภทใบเสร็จ', 'ประเภทใบเสร็จ', 'รายได้รวม')
-                    context.update({'chart2': fig.to_html()})
+                    context.update({'chart3': fig.to_html()})
+          except:
+               None
+          
+          try:
+               with connection.cursor() as cursor:
+                    query = """
+                         SELECT expense_name, total_expense
+                         FROM expense_by_type
+                         WHERE month_year = %s
+                    """
+                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    fig = px.bar(data, x='expense_name', y='total_expense')
+                    fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามประเภท', 'ประเภทค่าใช้จ่าย', 'ค่าใช้จ่ายรวม')
+                    context.update({'chart4': fig.to_html()})
+          except:
+               None
+
+          try:
+               with connection.cursor() as cursor:
+                    query = """
+                         SELECT product_name, total_sales
+                         FROM top_ten_sales
+                         WHERE month_year = %s
+                         """
+                    cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                    data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
+                    fig = px.bar(data, x='product_name', y='total_sales')
+                    fig = updateFig(fig, 'bar', 'Top 10 Sales', 'ชื่อสินค้า', 'จำนวน')
+                    context.update({'chart5': fig.to_html()})
           except:
                None
           
