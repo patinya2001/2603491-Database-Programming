@@ -1,4 +1,4 @@
-USE Shabu3peenong;
+USE shabu3peenong;
 
 CREATE OR REPLACE VIEW home_daily AS
 SELECT 
