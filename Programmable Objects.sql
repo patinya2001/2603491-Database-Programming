@@ -161,34 +161,11 @@ DELIMITER ;
 
 -- ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-DELIMITER //
-CREATE FUNCTION payroll(monthyear VARCHAR(9))
-RETURNS FLOAT
-READS SQL DATA
-BEGIN
-  DECLARE payroll_value FLOAT;
-
-  SELECT 
-    350 * SUM(NOT activity_absent) - 50 * SUM(activity_late) - SUM(advanced_pay)
-  INTO payroll_value
-  FROM activity
-  WHERE DATE_FORMAT(activity_date, '%Y-%m') = monthyear
-  GROUP BY DATE_FORMAT(activity_date, '%Y-%m');
-
-  IF payroll_value IS NULL THEN
-    SET payroll_value = 0;
-  END IF;
-
-  RETURN payroll_value;
-END //
-DELIMITER ;
-
-
 CREATE OR REPLACE VIEW summary_view AS
 SELECT
     month_year,
-    SUM(total_expense) + payroll(month_year) AS total_expense,
-    SUM(avg_expense) AS avg_expense,
+    SUM(total_expense) AS total_expense,
+    SUM(avg_expense)  AS avg_expense,
     SUM(total_income) AS total_income,
     SUM(avg_income) AS avg_income
 FROM (
@@ -214,18 +191,35 @@ FROM (
     FROM
         receipt
     GROUP BY
+        Month_year
+        
+	UNION
+    
+    SELECT
+        DATE_FORMAT(daily_expense_date, '%Y-%m') AS month_year,
+        SUM(daily_expense_price) AS total_expense,
+        AVG(daily_expense_price) AS avg_expense,
+        0 AS total_income,
+        0 AS avg_income
+    FROM
+        daily_expense 
+    GROUP BY
         month_year
+
+    UNION
+
+    SELECT
+        DATE_FORMAT(activity_date, '%Y-%m') AS month_year,
+        350 * SUM(NOT activity_absent) - 50 * SUM(activity_late) - SUM(advanced_pay) AS total_expense,
+        350 * AVG(NOT activity_absent) - 50 * AVG(activity_late) - AVG(advanced_pay) AS avg_expense,
+        0 AS total_income,
+        0 AS avg_income
+    FROM
+        activity
+    GROUP BY
+        Month_year
 ) AS subquery
 GROUP BY month_year;
-
-
-CREATE VIEW total_income_by_type AS
-SELECT 
-	DATE_FORMAT(receipt_date, '%Y-%m') AS month_year,
-	receipt_type,
-	SUM(receipt_net) AS total_income
-FROM receipt
-GROUP BY month_year, receipt_type;
 
 
 CREATE VIEW total_income_by_branch AS
@@ -236,34 +230,6 @@ SELECT
 FROM receipt r
 INNER JOIN branch b ON r.branch_id = b.branch_id
 GROUP BY month_year,  b.branch_name;
-
-
-CREATE OR REPLACE VIEW total_expense_by_type AS
-SELECT 
-	month_year,
-	expense_name,
-    SUM(total_advanced_pay) + SUM(total_daily_expense_price) AS total_expense
-FROM (
-	SELECT
-		DATE_FORMAT(activity_date, '%Y-%m') AS month_year,
-		'เงินเดือนเบิกล่วงหน้า' AS expense_name,
-		SUM(advanced_pay) AS total_advanced_pay,
-		0 AS total_daily_expense_price
-	FROM activity
-	GROUP BY month_year, branch_id
-
-	UNION
-
-	SELECT
-		DATE_FORMAT(de.daily_expense_date, '%Y-%m') AS month_year,
-		et.expense_name AS expense_name,
-		0 AS total_advanced_pay,
-		SUM(de.daily_expense_price) AS total_daily_expense_price
-	FROM daily_expense de
-	INNER JOIN expense_type et ON et.expense_id = de.expense_id
-	GROUP BY month_year, et.expense_name
-) AS subquery
-GROUP BY month_year, expense_name;
 
 
 CREATE OR REPLACE VIEW total_expense_by_branch AS
@@ -292,6 +258,43 @@ FROM (
 ) AS subquery
 INNER JOIN branch b ON branch_id = branch
 GROUP BY month_year, branch;
+
+
+CREATE VIEW total_income_by_type AS
+SELECT 
+	DATE_FORMAT(receipt_date, '%Y-%m') AS month_year,
+	receipt_type,
+	SUM(receipt_net) AS total_income
+FROM receipt
+GROUP BY month_year, receipt_type;
+
+
+CREATE OR REPLACE VIEW total_expense_by_type AS
+SELECT 
+	month_year,
+	expense_name,
+    SUM(total_advanced_pay) + SUM(total_daily_expense_price) AS total_expense
+FROM (
+	SELECT
+		DATE_FORMAT(activity_date, '%Y-%m') AS month_year,
+		'เงินเดือน' AS expense_name,
+		SUM(advanced_pay) AS total_advanced_pay,
+		0 AS total_daily_expense_price
+	FROM activity
+	GROUP BY month_year
+
+	UNION
+
+	SELECT
+		DATE_FORMAT(de.daily_expense_date, '%Y-%m') AS month_year,
+		et.expense_name AS expense_name,
+		0 AS total_advanced_pay,
+		SUM(de.daily_expense_price) AS total_daily_expense_price
+	FROM daily_expense de
+	INNER JOIN expense_type et ON et.expense_id = de.expense_id
+	GROUP BY month_year, et.expense_name
+) AS subquery
+GROUP BY month_year, expense_name;
 
 
 CREATE OR REPLACE VIEW top_ten_sales AS

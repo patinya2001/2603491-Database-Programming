@@ -694,7 +694,7 @@ def showInfo(request):
 
      else:
           form = FilterData(init='summary')
-          monthFilter = MonthYearFilter(monthYear=datetime.now().strftime("%Y-%m"))
+          monthFilter = MonthYearFilter(monthYear='2023-09')
           request.session.pop('showInfoFilter', None)
           request.session['showInfoFilter'] = {'showInfoFilter': {'filter': 'summary'}}
           context = {'form': form, 'monthFilter': monthFilter, 'filter': 1}
@@ -706,7 +706,7 @@ def showInfo(request):
                               FROM summary_view
                               WHERE month_year = %s
                               """
-                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     context.update(data[0])
           except:
@@ -719,7 +719,7 @@ def showInfo(request):
                               FROM total_income_by_branch
                               WHERE month_year = %s
                               """
-                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='branch_name', y='total_income')
                     fig = updateFig(fig, 'bar', 'รายได้แยกตามสาขา', 'สาขา', 'รายได้รวม')
@@ -734,7 +734,7 @@ def showInfo(request):
                               FROM total_expense_by_branch
                               WHERE month_year = %s
                               """
-                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='branch_name', y='total_expense')
                     fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามสาขา', 'สาขา', 'ค่าใช้จ่ายรวม')
@@ -749,7 +749,7 @@ def showInfo(request):
                               FROM total_income_by_type
                               WHERE month_year = %s
                               """
-                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='receipt_type', y='total_income')
                     fig = updateFig(fig, 'bar', 'รายได้แยกตามประเภทใบเสร็จ', 'ประเภทใบเสร็จ', 'รายได้รวม')
@@ -764,7 +764,7 @@ def showInfo(request):
                          FROM total_expense_by_type
                          WHERE month_year = %s
                     """
-                    cursor.execute(query, (datetime.now().strftime("%Y-%m"),))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='expense_name', y='total_expense')
                     fig = updateFig(fig, 'bar', 'ค่าใช้จ่ายแยกตามประเภท', 'ประเภทค่าใช้จ่าย', 'ค่าใช้จ่ายรวม')
@@ -779,7 +779,7 @@ def showInfo(request):
                          FROM top_ten_sales
                          WHERE month_year = %s
                          """
-                    cursor.execute(query, (monthFilterCleaned['monthYear'],))
+                    cursor.execute(query, ('2023-09',))
                     data = [dict(zip([col[0] for col in cursor.description], row)) for row in cursor.fetchall()]
                     fig = px.bar(data, x='product_name', y='total_sales')
                     fig = updateFig(fig, 'bar', 'Top 10 Sales', 'ชื่อสินค้า', 'จำนวน')
