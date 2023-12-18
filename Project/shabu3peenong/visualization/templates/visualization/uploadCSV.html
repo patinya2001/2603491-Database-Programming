@@ -21,7 +21,7 @@
                 </form>
                 {% if dataframe %}
                     {% if addProduct %}
-                        <form method="POST" action="{% url 'addProduct' %}" class="csv-submit">
+                        <form method="POST" action="{% url 'product' %}" class="csv-submit">
                     {% else %}
                         <form method="POST" action="{% url 'save' %}" class="csv-submit">
                     {% endif %}

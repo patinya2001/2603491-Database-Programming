@@ -11,7 +11,7 @@ ORDER BY CAST(receipt_date as date);
 
 DELIMITER //
 CREATE PROCEDURE InsertProduct
-(IN SKU INT, IN sales_id INT, IN sales VARCHAR(50), IN product_name VARCHAR(50), IN product_price FLOAT, 
+(IN SKU INT, IN sale_id INT, IN sales VARCHAR(50), IN product_name VARCHAR(50), IN product_price FLOAT, 
 IN product_cost FLOAT, IN product_description VARCHAR(255))
 BEGIN
     DECLARE sales_name_id INT;
@@ -20,12 +20,12 @@ BEGIN
         SET product_description = NULL;
     END IF;
 
-    IF sales IS NOT NULL THEN
+    IF sale_id IS NULL THEN
         SELECT sales_id INTO sales_name_id FROM sales_type WHERE sales_name = sales;
     END IF;
 
     INSERT INTO product_list (SKU, sales_id, product_name, product_price, product_cost, product_description) 
-    VALUES (SKU, COALESCE(sales_name_id, sales_id), product_name, product_price, product_cost, product_description);
+    VALUES (SKU, COALESCE(sales_name_id, sale_id), product_name, product_price, product_cost, product_description);
 END //
 DELIMITER ;
 

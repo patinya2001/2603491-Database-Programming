@@ -253,7 +253,7 @@ def saveCSV(request):
                     productDataframe = productSession.get('addProduct')
                     if productDataframe:
                          productDataframe = pd.read_json(productDataframe)
-                         procedure = 'CALL InsertProduct(%s, NULL, %s, %s, %s, %s, %s)'
+                         procedure = 'CALL InsertProduct(%s, NULL, %s, %s, %s, %s, '')'
 
                          for i in range(productDataframe.shape[0]):
                                    data = [
@@ -306,17 +306,18 @@ def saveCSV(request):
                     productDataframe = productSession.get('addProduct')
                     if productDataframe:
                          productDataframe = pd.read_json(productDataframe)
+                         print(productDataframe.iloc[:, 0])
                          procedure = 'CALL InsertProduct(%s, NULL, %s, %s, %s, %s, %s)'
 
                          for i in range(productDataframe.shape[0]):
-                                   data = [
-                                        productDataframe.iloc[i, 0], productDataframe.iloc[i, 1], productDataframe.iloc[i, 2], 
-                                        productDataframe.iloc[i, 3], productDataframe.iloc[i, 4]
-                                        ]
-                                   with connection.cursor() as cursor:
-                                        cursor.execute(procedure, data)
-                         
-                         request.session.pop('addProduct', None)
+                              data = [
+                                   productDataframe.iloc[i, 0], productDataframe.iloc[i, 1], productDataframe.iloc[i, 2], 
+                                   productDataframe.iloc[i, 3], productDataframe.iloc[i, 4], ''
+                                   ]
+                              with connection.cursor() as cursor:
+                                   cursor.execute(procedure, data)
+                              
+                    request.session.pop('addProduct', None)
                except:
                     None
 
