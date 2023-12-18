@@ -245,12 +245,12 @@ SELECT
     SUM(total_advanced_pay) + SUM(total_daily_expense_price) AS total_expense
 FROM (
 	SELECT
-			DATE_FORMAT(activity_date, '%Y-%m') AS month_year,
-			'เงินเดือนเบิกล่วงหน้า' AS expense_name,
-			SUM(advanced_pay) AS total_advanced_pay,
-			0 AS total_daily_expense_price
-		FROM activity
-		GROUP BY month_year, branch_id
+		DATE_FORMAT(activity_date, '%Y-%m') AS month_year,
+		'เงินเดือนเบิกล่วงหน้า' AS expense_name,
+		SUM(advanced_pay) AS total_advanced_pay,
+		0 AS total_daily_expense_price
+	FROM activity
+	GROUP BY month_year, branch_id
 
 	UNION
 
@@ -268,7 +268,7 @@ GROUP BY month_year, expense_name;
 
 CREATE OR REPLACE VIEW total_expense_by_branch AS
 SELECT 
-month_year,
+	month_year,
 	b.branch_name,
     SUM(total_advanced_pay) + SUM(total_daily_expense_price) AS total_expense
 FROM (
