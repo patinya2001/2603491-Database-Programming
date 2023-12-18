@@ -352,7 +352,7 @@ def showInfo(request):
           monthFilterCleaned = session.get('monthFilterCleaned')
 
           if monthFilterCleaned['monthYear'] == '':
-               monthFilterCleaned = {'monthYear': datetime.now().strftime("%Y-%m")}
+               monthFilterCleaned = {'monthYear': '2023-09'}
 
           filterSession = request.session.get('showInfoFilter')
           showInfoFilter = filterSession.get('showInfoFilter')
