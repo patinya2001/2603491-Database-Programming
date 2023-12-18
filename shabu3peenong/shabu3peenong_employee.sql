@@ -39,7 +39,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,1,'A','G'),(2,1,'B','F'),(3,2,'C','I'),(4,2,'D','J'),(5,3,'E','K'),(6,3,'H','L');
+INSERT INTO `employee` VALUES (1,1,'A','สาขาพหลโยธิน 52'),(2,1,'B','สาขาพหลโยธิน 52'),(3,2,'C','สาขาม.รังสิต'),(4,2,'D','สาขาม.รังสิต'),(5,3,'E','สาขารังสิต 200 ปี'),(6,3,'H','สาขารังสิต 200 ปี');
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-15  4:36:53
+-- Dump completed on 2023-12-18 22:57:20
