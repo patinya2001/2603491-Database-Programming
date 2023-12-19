@@ -267,7 +267,10 @@ def saveCSV(request):
                except:
                     None
 
-               dataframe['วันที่'] = (pd.to_datetime(dataframe['วันที่'], format='%d/%m/%y %H:%M')).dt.strftime('%m/%d/%y %H:%M')
+               try:
+                    dataframe['วันที่'] = (pd.to_datetime(dataframe['วันที่'], format='%d/%m/%y %H:%M')).dt.strftime('%m/%d/%y %H:%M')
+               except:
+                    None
                
                try:
                     dataframe['วันที่'] = dataframe['วันที่'].apply(lambda x: datetime.strptime(x, "%m/%d/%y %H:%M"))
