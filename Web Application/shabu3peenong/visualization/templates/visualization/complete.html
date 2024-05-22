@@ -1,0 +1,13 @@
+{% extends 'visualization/components/base.html' %}
+
+{% block title %}หน้าแรก{% endblock %}
+
+{% block content %}
+<main class="normal-content">
+    <div class="">
+        <h1>บันทึกสำเร็จ</h1>
+        <a href="{% url 'home' %}" class="button button-primary" style="margin-top: 2%;">กลับสู่หน้าแรก</a>
+        <a href="{% url 'record' %}" class="button button-primary" style="margin-top: 2%;">บันทึกอีกครั้ง</a>
+    </div>
+</main>
+{% endblock %}

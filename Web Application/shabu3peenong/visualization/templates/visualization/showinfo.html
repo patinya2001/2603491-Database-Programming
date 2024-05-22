@@ -1,0 +1,340 @@
+{% extends 'visualization/components/base.html' %}
+
+{% block title %}วิเคราะห์ข้อมูล{% endblock %}
+
+{% block content %}
+    <main class="dashboard">
+        {% if user.is_superuser %}
+            {% if filter == 1 %}
+                <div>
+                    <form id="filter" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <script>
+                            document.getElementById("id_filter").addEventListener("change", function() {
+                                document.getElementById("filter").submit();
+                            });
+                        </script>
+                    </form>
+                </div>
+                <div style="margin-left: 27em;">
+                    <form id="monthFilter" method="POST" action="{% url 'cleanMonth' %}">
+                        {% csrf_token %}
+                        {{ monthFilter.as_p }}
+                        <script>
+                            document.getElementById("id_monthYear").addEventListener("change", function() {
+                                document.getElementById("monthFilter").submit();
+                            });
+                        </script>                    
+                    </form>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">รายได้รวม</h1>
+                        {% if total_income %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ total_income }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}      
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">ค่าใช้จ่ายรวม</h1>
+                        {% if total_expense %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ total_expense }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">รายได้เฉลี่ยต่อเดือน</h1>
+                        {% if avg_income %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ avg_income }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">ค่าใช้จ่ายเฉลี่ยต่อเดือน</h1>
+                        {% if avg_expense %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ avg_expense }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart1 %}
+                            {{ chart1|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart2 %}
+                            {{ chart2|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart3 %}
+                            {{ chart3|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart4 %}
+                            {{ chart4|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart5 %}
+                            {{ chart5|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif filter == 2 %}
+                <div>
+                    <form id="filter" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <script>
+                            document.getElementById("id_filter").addEventListener("change", function() {
+                                document.getElementById("filter").submit();
+                            });
+                        </script>
+                    </form>
+                </div>
+                <div style="margin-left: 27em;">
+                    <form id="monthFilter" method="POST" action="{% url 'cleanMonth' %}">
+                        {% csrf_token %}
+                        {{ monthFilter.as_p }}
+                        <script>
+                            document.getElementById("id_monthYear").addEventListener("change", function() {
+                                document.getElementById("monthFilter").submit();
+                            });
+                        </script>                    
+                    </form>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">รายได้ก่อนหักส่วนลด</h1>
+                        {% if total_income %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ total_income }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">รายได้หลังหักส่วนลด</h1>
+                        {% if total_net_income %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ total_net_income }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart1 %}
+                            {{ chart1|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart2 %}
+                            {{ chart2|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart3 %}
+                            {{ chart3|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif filter == 3 %}
+                <div>
+                    <form id="filter" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <script>
+                            document.getElementById("id_filter").addEventListener("change", function() {
+                                document.getElementById("filter").submit();
+                            });
+                        </script>
+                    </form>
+                </div>
+                <div style="margin-left: 27em;">
+                    <form id="monthFilter" method="POST" action="{% url 'cleanMonth' %}">
+                        {% csrf_token %}
+                        {{ monthFilter.as_p }}
+                        <script>
+                            document.getElementById("id_monthYear").addEventListener("change", function() {
+                                document.getElementById("monthFilter").submit();
+                            });
+                        </script>                    
+                    </form>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">ค่าใช้จ่ายทั้งหมด</h1>
+                        {% if total_expense %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ total_expense }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">รายการค่าใช้จ่ายทั้งหมด</h1>
+                        {% if count %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ count }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart1 %}
+                            {{ chart1|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart2 %}
+                            {{ chart2|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart3 %}
+                            {{ chart3|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            {% elif filter == 4 %}
+                <div>
+                    <form id="filter" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <script>
+                            document.getElementById("id_filter").addEventListener("change", function() {
+                                document.getElementById("filter").submit();
+                            });
+                        </script>
+                    </form>
+                </div>
+                <div style="margin-left: 27em;">
+                    <form id="monthFilter" method="POST" action="{% url 'cleanMonth' %}">
+                        {% csrf_token %}
+                        {{ monthFilter.as_p }}
+                        <script>
+                            document.getElementById("id_monthYear").addEventListener("change", function() {
+                                document.getElementById("monthFilter").submit();
+                            });
+                        </script>                    
+                    </form>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">พนักงานมาสาย</h1>
+                        {% if count_late %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ count_late }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list" style="text-align: center;">
+                        <h1 style="margin-top: 3%;">พนักงานไม่มาทำงาน</h1>
+                        {% if count_absent %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">{{ count_absent }}</h2>
+                        {% else %}
+                            <h2 style="color: #ea335d; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h2>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart1 %}
+                            {{ chart1|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart2 %}
+                            {{ chart2|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart3 %}
+                            {{ chart3|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel list">
+                        {% if chart4 %}
+                            {{ chart4|safe }}
+                        {% else %}
+                            <h1 style="text-align: center; margin-top: 3%; margin-bottom: 3%;">ไม่พบข้อมูลในฐานข้อมูล</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <h1 class="welcome-text">คุณไม่มีสิทธิเข้าถึงหน้านี้</h1>
+        {% endif %}
+    </main>
+{% endblock %}
