@@ -2,7 +2,7 @@
 
 <p align="justify">โปรเจคนี้เป็นส่วนหนึ่งของวิชา 2603491 การโปรแกรมสำหรับฐานข้อมูล </p>
 
-##ขั้นตอนในการติดตั้ง (Viusal Studio Code)
+## ขั้นตอนในการติดตั้ง (Viusal Studio Code)
 1. Clone โปรเจคจาก GitHub หรือ Download ZIP
 2. เปิด MySQL Workbench เลือกแท็ป Administration หรือ Server เลือก Data Import/Restore
 3. เลือก Import from Dump Project Folder คลิก ... เลือกโฟลเดอร์ shabu3peenong ในโฟลเดอร์ที่ Clone มา
